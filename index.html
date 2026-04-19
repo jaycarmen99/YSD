@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YSD Audio — Score & Composition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+  <script type="module" src="https://unpkg.com/@splinetool/viewer@1.0.76/build/spline-viewer.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --black: #0a0a0a;
+      --white: #ffffff;
+      --red: #D72638;
+      --red-dark: #a81c28;
+      --grey: #111111;
+      --mid: #888888;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--black); }
+    ::-webkit-scrollbar-thumb { background: var(--red); }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 48px;
+      transition: background 0.4s, padding 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(10,10,10,0.95);
+      padding: 16px 48px;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #1a1a1a;
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 3px;
+      color: var(--white);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--red); }
+    .nav-book {
+      background: var(--red);
+      color: var(--white);
+      border: none;
+      padding: 10px 28px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+      display: inline-block;
+    }
+    .nav-book:hover { background: var(--red-dark); transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 120px 48px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Photo layer — pure CSS, no extra elements, no hard edges */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 65%;
+      height: 100%;
+      background: url('hero.jpg.jpg') center top / cover no-repeat;
+      filter: brightness(0.45) saturate(1.1);
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.4) 25%, black 55%);
+      mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,0.4) 25%, black 55%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Canvas dot grid — above photo, below text */
+    #hero-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* All hero content above canvas */
+    .hero-eyebrow,
+    .hero-title,
+    .hero-sub,
+    .hero-cta,
+    .hero-stats,
+    .scroll-line {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-eyebrow {
+      font-size: 12px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--red);
+      font-weight: 600;
+      margin-bottom: 24px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.8s 0.2s forwards;
+    }
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(72px, 12vw, 160px);
+      line-height: 0.9;
+      letter-spacing: 2px;
+      margin-bottom: 32px;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 0.8s 0.4s forwards;
+    }
+    .hero-title .red { color: var(--red); }
+    .hero-title .outline {
+      -webkit-text-stroke: 2px var(--white);
+      color: transparent;
+    }
+    .word-wrap { display: inline-block; white-space: nowrap; }
+    .anim-anchor { display: inline; }
+    .anim-rest {
+      display: inline-block;
+      clip-path: inset(0 100% 0 0);
+      transform: translateX(-0.5em);
+      animation: slideReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      opacity: 0;
+    }
+    .anim-rest.word-1 { animation-delay: 1.3s; }
+    .anim-rest.word-2 { animation-delay: 1.6s; }
+    .anim-rest.word-3 { animation-delay: 1.9s; }
+    @keyframes slideReveal {
+      to { clip-path: inset(0 0% 0 0); transform: translateX(0); opacity: 1; }
+    }
+    .hero-sub {
+      max-width: 520px;
+      font-size: 16px;
+      line-height: 1.7;
+      color: #aaaaaa;
+      font-weight: 300;
+      margin-bottom: 48px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.8s 0.6s forwards;
+    }
+    .hero-sub strong { color: var(--white); font-weight: 600; }
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.8s 0.8s forwards;
+    }
+    .btn-primary {
+      background: var(--red);
+      color: var(--white);
+      padding: 16px 40px;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+      display: inline-block;
+    }
+    .btn-primary:hover { background: var(--red-dark); transform: translateY(-2px); }
+    .btn-ghost {
+      color: var(--white);
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      font-weight: 600;
+      border-bottom: 1px solid #444;
+      padding-bottom: 2px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--red); color: var(--red); }
+
+    /* Stats — absolute bottom right, original position */
+    .hero-stats {
+      position: absolute;
+      bottom: 60px; right: 48px;
+      display: flex;
+      gap: 48px;
+      opacity: 0;
+      animation: fadeUp 0.8s 1s forwards;
+    }
+    .stat-item { text-align: right; }
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 42px;
+      color: var(--white);
+      line-height: 1;
+    }
+    .stat-num span { color: var(--red); }
+    .stat-label {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-top: 4px;
+    }
+    .scroll-line {
+      position: absolute;
+      bottom: 0; left: 48px;
+      width: 1px; height: 80px;
+      background: linear-gradient(to bottom, transparent, var(--red));
+      opacity: 0;
+      animation: fadeIn 1s 1.2s forwards;
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      padding: 120px 48px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .section-label {
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--red);
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(48px, 6vw, 88px);
+      line-height: 0.95;
+      letter-spacing: 1px;
+      margin-bottom: 24px;
+    }
+    .section-body {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #aaaaaa;
+      font-weight: 300;
+      max-width: 560px;
+    }
+    .section-body strong { color: var(--white); font-weight: 600; }
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: #1a1a1a;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ── MARQUEE ── */
+    .marquee-wrap {
+      overflow: hidden;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+      padding: 20px 0;
+      background: var(--grey);
+    }
+    .marquee-track {
+      display: flex;
+      animation: marquee 20s linear infinite;
+      white-space: nowrap;
+    }
+    .marquee-item {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 4px;
+      color: #333;
+      padding: 0 40px;
+      flex-shrink: 0;
+    }
+    .marquee-item span { color: var(--red); }
+
+    /* ── DIFFERENTIATORS ── */
+    .creds-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: #1a1a1a;
+      margin-top: 56px;
+    }
+    .cred-item {
+      background: var(--black);
+      padding: 36px 32px;
+      border-top: 2px solid transparent;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .cred-item:hover { background: #0d0d0d; border-color: var(--red); }
+    .cred-icon {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: var(--red);
+      margin-bottom: 12px;
+    }
+    .cred-headline {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      line-height: 1.05;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+    .cred-sub {
+      font-size: 12px;
+      color: #555;
+      font-weight: 300;
+      letter-spacing: 1px;
+      line-height: 1.5;
+    }
+
+    /* WAVE VISUAL */
+    .wave-section {
+      position: relative;
+      width: 100%;
+      height: 260px;
+      overflow: hidden;
+      background: var(--black);
+      cursor: crosshair;
+    }
+    #wave-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .wave-label {
+      position: absolute;
+      bottom: 24px;
+      right: 48px;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #222;
+      font-family: 'Inter', sans-serif;
+      pointer-events: none;
+    }
+
+    .diff-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: #1a1a1a;
+      margin-top: 80px;
+    }
+    .diff-card {
+      background: #0d0d0d;
+      padding: 48px 40px;
+      position: relative;
+      overflow: hidden;
+      border-top: 2px solid #1a1a1a;
+      transition: background 0.4s, border-color 0.4s, box-shadow 0.4s;
+    }
+    .diff-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at top left, rgba(215,38,56,0.06) 0%, transparent 65%);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .diff-card:hover { background: #111; border-color: var(--red); box-shadow: 0 0 40px rgba(215,38,56,0.06) inset; }
+    .diff-card:hover::before { opacity: 1; }
+    .diff-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 64px;
+      color: rgba(215,38,56,0);
+      line-height: 1;
+      margin-bottom: 0;
+      position: absolute;
+      top: 12px; right: 20px;
+      pointer-events: none;
+      transform: scale(1.3) translateY(-16px);
+      transition: color 1s ease, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1), text-shadow 0.4s;
+    }
+    /* Animate in when card scrolls into view */
+    .diff-card.visible .diff-num {
+      color: rgba(215,38,56,0.28);
+      transform: scale(1) translateY(0);
+    }
+    /* Hover — brighter + glow */
+    .diff-card.visible:hover .diff-num {
+      color: rgba(215,38,56,0.65);
+      transform: scale(1.07) translateY(0);
+      text-shadow: 0 0 50px rgba(215,38,56,0.35), 0 0 100px rgba(215,38,56,0.15);
+    }
+    .diff-content { position: relative; z-index: 1; padding-top: 64px; }
+    .diff-title { font-size: 20px; font-weight: 700; margin-bottom: 12px; color: var(--white); letter-spacing: -0.2px; }
+    .diff-body { font-size: 13px; line-height: 1.8; color: #666; font-weight: 300; }
+
+    /* ── SERVICES ── */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1px;
+      background: #1a1a1a;
+      margin-top: 80px;
+    }
+    .service-card {
+      background: var(--black);
+      padding: 56px 40px;
+      transition: background 0.3s;
+    }
+    .service-card.featured { background: var(--red); }
+    .service-card.featured:hover { background: var(--red-dark); }
+    .service-card:not(.featured):hover { background: #0f0f0f; }
+    .service-tag {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--red);
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+    .service-card.featured .service-tag { color: rgba(255,255,255,0.7); }
+    .service-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 48px;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .service-price { font-size: 32px; font-weight: 900; margin-bottom: 24px; }
+    .service-price span { font-size: 15px; font-weight: 300; color: #888; }
+    .service-card.featured .service-price span { color: rgba(255,255,255,0.6); }
+    .service-divider { width: 40px; height: 2px; background: #222; margin-bottom: 24px; }
+    .service-card.featured .service-divider { background: rgba(255,255,255,0.3); }
+    .service-features { list-style: none; }
+    .service-features li {
+      font-size: 13px;
+      color: #777;
+      padding: 8px 0;
+      border-bottom: 1px solid #141414;
+      font-weight: 300;
+    }
+    .service-card.featured .service-features li {
+      color: rgba(255,255,255,0.8);
+      border-bottom-color: rgba(255,255,255,0.1);
+    }
+    .service-features li::before { content: '— '; color: var(--red); font-weight: 700; }
+    .service-card.featured .service-features li::before { color: var(--white); }
+
+    /* ── STEPS ── */
+    .steps-wrap { margin-top: 80px; }
+    .step-row {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 40px;
+      align-items: start;
+      padding: 40px 0;
+      border-bottom: 1px solid #141414;
+      position: relative;
+      transition: padding-left 0.3s;
+      cursor: default;
+    }
+    .step-row:first-child { border-top: 1px solid #141414; }
+    .step-row:hover { padding-left: 16px; }
+    .step-n {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 56px;
+      color: #1c1c1c;
+      line-height: 1;
+      transition: color 0.3s;
+    }
+    .step-row:hover .step-n { color: var(--red); }
+    .step-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .step-desc { font-size: 13px; line-height: 1.7; color: #666; font-weight: 300; max-width: 600px; }
+    .step-badge {
+      position: absolute;
+      right: 0; top: 40px;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    /* ── GUARANTEE ── */
+    .guarantee-block {
+      background: var(--grey);
+      border-left: 4px solid var(--red);
+      padding: 64px;
+    }
+    .guarantee-block .big-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(40px, 5vw, 72px);
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+    .guarantee-block .big-text .red { color: var(--red); }
+    .guarantee-block p { font-size: 15px; color: #888; font-weight: 300; line-height: 1.7; max-width: 560px; }
+    .guarantee-block p strong { color: var(--white); }
+
+    /* ── CTA ── */
+    .cta-section {
+      text-align: center;
+      padding: 160px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 800px; height: 400px;
+      background: radial-gradient(ellipse, rgba(215,38,56,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-big {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(60px, 10vw, 140px);
+      line-height: 0.9;
+      letter-spacing: 2px;
+      margin-bottom: 32px;
+    }
+    .cta-big .outline { -webkit-text-stroke: 2px #333; color: transparent; }
+    .cta-big .red { color: var(--red); }
+    .cta-sub { font-size: 15px; color: #666; margin-bottom: 48px; font-weight: 300; }
+    .cta-email {
+      display: inline-block;
+      font-size: 13px;
+      color: var(--mid);
+      letter-spacing: 2px;
+      margin-top: 24px;
+      text-decoration: none;
+    }
+    .cta-email:hover { color: var(--white); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid #141414;
+      padding: 40px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: #333; }
+    .footer-logo span { color: var(--red); }
+    .footer-copy { font-size: 12px; color: #333; letter-spacing: 1px; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-delay-5 { transition-delay: 0.5s; }
+
+    /* ── CUSTOM CURSOR — red arrow ── */
+    @media (hover: hover) {
+      * {
+        cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='20' viewBox='0 0 14 20'%3E%3Cpath d='M1 1 L1 16 L5 12 L7.5 18.5 L10 17.5 L7.5 11 L12.5 11 Z' fill='%23D72638' stroke='%23000' stroke-width='0.8' stroke-linejoin='round'/%3E%3C/svg%3E") 1 1, auto !important;
+      }
+    }
+
+    /* ── FILM GRAIN ── */
+    #grain {
+      position: fixed; inset: 0;
+      pointer-events: none;
+      z-index: 9990;
+      opacity: 0.038;
+      mix-blend-mode: screen;
+    }
+
+    /* ── SCROLL PROGRESS BAR ── */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      width: 0%;
+      background: var(--red);
+      z-index: 9997;
+      transition: width 0.1s linear;
+      box-shadow: 0 0 8px rgba(215,38,56,0.6);
+    }
+
+    /* ── ANIMATED DIVIDER ── */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: transparent;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+    }
+    .divider::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      height: 1px; width: 0;
+      background: linear-gradient(to right, transparent, #333 30%, #1a1a1a 70%, transparent);
+      transition: width 1.4s cubic-bezier(0.22,1,0.36,1);
+    }
+    .divider.line-visible::after { width: 100%; }
+
+    /* ── SECTION TITLE SLIDE ── */
+    .section-title {
+      overflow: hidden;
+    }
+    .section-title .title-inner {
+      display: block;
+      transform: translateX(-60px);
+      opacity: 0;
+      transition: transform 0.9s cubic-bezier(0.22,1,0.36,1), opacity 0.9s ease;
+    }
+    .section-title.visible .title-inner {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    /* ── MEET THE PRODUCER ── */
+    .producer-section {
+      background: var(--black);
+      border-top: 1px solid #141414;
+    }
+    .producer-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 120px 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .producer-photos {
+      position: relative;
+      height: 620px;
+    }
+    .producer-photo-main {
+      position: absolute;
+      right: 0; top: 0;
+      width: 78%;
+      height: 88%;
+      object-fit: cover;
+      object-position: center top;
+      filter: brightness(0.88) saturate(0.9);
+    }
+    .producer-photo-accent {
+      position: absolute;
+      left: 0; bottom: 0;
+      width: 48%;
+      height: 52%;
+      object-fit: cover;
+      object-position: center top;
+      filter: brightness(0.82) saturate(0.85);
+      border: 3px solid var(--black);
+    }
+    .producer-text { display: flex; flex-direction: column; justify-content: center; }
+    .producer-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(52px, 6vw, 88px);
+      line-height: 0.92;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .producer-aka {
+      font-size: 12px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--red);
+      font-weight: 700;
+      margin-bottom: 32px;
+    }
+    .producer-bio {
+      font-size: 15px;
+      line-height: 1.85;
+      color: #888;
+      font-weight: 300;
+      margin-bottom: 40px;
+    }
+    .producer-bio strong { color: var(--white); font-weight: 600; }
+    .producer-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: #1a1a1a;
+      margin-bottom: 40px;
+    }
+    .producer-stat {
+      background: var(--black);
+      padding: 20px 16px;
+    }
+    .producer-stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px;
+      color: var(--red);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .producer-stat-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #444;
+      font-weight: 600;
+    }
+    .producer-location {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #333;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .producer-location::before {
+      content: '';
+      display: inline-block;
+      width: 28px;
+      height: 1px;
+      background: var(--red);
+    }
+    @media (max-width: 768px) {
+      .producer-wrap { grid-template-columns: 1fr; gap: 48px; padding: 80px 24px; }
+      .producer-photos { height: 420px; }
+    }
+
+    /* ── NOT AI SECTION ── */
+    .human-section {
+      position: relative;
+      overflow: hidden;
+      min-height: 700px;
+      border-top: 1px solid #141414;
+      border-bottom: 1px solid #141414;
+    }
+    .human-spline {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      filter: hue-rotate(-28deg) saturate(1.15);
+    }
+    .human-spline::part(logo) { display: none !important; }
+    /* Hard cover over the Spline watermark (bottom-right corner) */
+    .human-section::after {
+      content: '';
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 180px; height: 48px;
+      background: var(--black);
+      z-index: 10;
+      pointer-events: none;
+    }
+    /* Dark gradient so text stays readable over the 3D scene */
+    .human-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(10,10,10,0.88) 35%, rgba(10,10,10,0.15) 100%);
+      z-index: 1;
+      pointer-events: none;
+    }
+    .human-content {
+      position: relative;
+      z-index: 2;
+      padding: 110px 48px;
+      max-width: 580px;
+    }
+    .human-heading {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(52px, 6.5vw, 92px);
+      line-height: 0.92;
+      letter-spacing: 1px;
+      margin-bottom: 28px;
+      color: var(--white);
+    }
+    .human-heading .red { color: var(--red); }
+    .human-heading .outline {
+      -webkit-text-stroke: 2px var(--white);
+      color: transparent;
+    }
+    .human-body {
+      font-size: 15px;
+      line-height: 1.85;
+      color: #999;
+      font-weight: 300;
+      max-width: 460px;
+      margin-bottom: 40px;
+    }
+    .human-body strong { color: var(--white); font-weight: 600; }
+    .human-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .human-tag {
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      padding: 9px 18px;
+      border: 1px solid #2a2a2a;
+      color: #555;
+      font-weight: 600;
+      transition: border-color 0.3s, color 0.3s;
+    }
+    .human-tag:hover { border-color: var(--red); color: var(--red); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 20px 24px; }
+      nav.scrolled { padding: 14px 24px; }
+      .hero { padding: 100px 24px 120px; }
+      .hero::before { width: 100%; -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%); mask-image: linear-gradient(to bottom, black 40%, transparent 100%); filter: brightness(0.25) saturate(1.1); }
+      .hero-stats { right: 24px; gap: 24px; bottom: 40px; }
+      .stat-num { font-size: 32px; }
+      section { padding: 80px 24px; }
+      .guarantee-block { padding: 40px 32px; }
+      .creds-strip { grid-template-columns: 1fr; }
+      .diff-grid, .services-grid { grid-template-columns: 1fr; }
+      footer { padding: 32px 24px; }
+      .cta-section { padding: 100px 24px; }
+      .step-row { grid-template-columns: 56px 1fr; gap: 24px; }
+      .step-badge { display: none; }
+      .human-section { min-height: 600px; }
+      .human-content { padding: 80px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dynamic UI overlays -->
+  <div id="progress-bar"></div>
+  <canvas id="grain"></canvas>
+
+  <nav id="nav">
+    <a href="#" class="nav-logo">YSD<span>.</span>AUDIO</a>
+    <a href="#book" class="nav-book">Book a project</a>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+
+    <!-- Layer 1: Canvas dot grid (photo handled by CSS ::before) -->
+    <canvas id="hero-canvas"></canvas>
+
+    <!-- Layer 3: Content -->
+    <div class="hero-eyebrow">Score &amp; Composition — Available Now</div>
+    <h1 class="hero-title">
+      <span class="word-wrap"><span class="anim-anchor">Y</span><span class="anim-rest word-1">OUR</span></span><br>
+      <span class="word-wrap red"><span class="anim-anchor">S</span><span class="anim-rest word-2">OUND.</span></span><br>
+      <span class="word-wrap outline"><span class="anim-anchor">D</span><span class="anim-rest word-3">ESIGNED.</span></span>
+    </h1>
+    <p class="hero-sub">
+      Custom music for your video, game, ad or project —
+      <strong>written, produced and recorded by one person.</strong>
+      No outsourcing. No delays. No surprises.
+    </p>
+    <div class="hero-cta">
+      <a href="#book" class="btn-primary">Start a project</a>
+      <a href="#services" class="btn-ghost">See pricing</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">SM<span>.</span></div>
+        <div class="stat-label">Entertainment level</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">100<span>%</span></div>
+        <div class="stat-label">Remote &amp; async</div>
+      </div>
+    </div>
+    <div class="scroll-line"></div>
+
+  </div>
+
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span class="marquee-item">CINEMATIC <span>&#10022;</span></span>
+      <span class="marquee-item">GAME SCORE <span>&#10022;</span></span>
+      <span class="marquee-item">AD MUSIC <span>&#10022;</span></span>
+      <span class="marquee-item">SOUND DESIGN <span>&#10022;</span></span>
+      <span class="marquee-item">K-POP <span>&#10022;</span></span>
+      <span class="marquee-item">METAL <span>&#10022;</span></span>
+      <span class="marquee-item">ORCHESTRAL <span>&#10022;</span></span>
+      <span class="marquee-item">SYNC LICENSING <span>&#10022;</span></span>
+      <span class="marquee-item">CINEMATIC <span>&#10022;</span></span>
+      <span class="marquee-item">GAME SCORE <span>&#10022;</span></span>
+      <span class="marquee-item">AD MUSIC <span>&#10022;</span></span>
+      <span class="marquee-item">SOUND DESIGN <span>&#10022;</span></span>
+      <span class="marquee-item">K-POP <span>&#10022;</span></span>
+      <span class="marquee-item">METAL <span>&#10022;</span></span>
+      <span class="marquee-item">ORCHESTRAL <span>&#10022;</span></span>
+      <span class="marquee-item">SYNC LICENSING <span>&#10022;</span></span>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section>
+    <div class="section-label reveal">What I do</div>
+    <h2 class="section-title reveal reveal-delay-1"><span class="title-inner">ONE PERSON.<br>EVERY PART.</span></h2>
+    <p class="section-body reveal reveal-delay-2">
+      Most composers hand your brief to a team of writers, producers and session musicians.
+      <strong>I do it all myself</strong> — writing, production, recording and performance in one session.
+      Faster turnaround, consistent quality, one person accountable for the result.
+    </p>
+    <div class="creds-strip">
+      <div class="cred-item reveal reveal-delay-1">
+        <div class="cred-icon">&#10022; Award Winning</div>
+        <div class="cred-headline">2x Award Winning Producer &amp; DJ</div>
+        <div class="cred-sub">Performing and releasing under the name AC13</div>
+      </div>
+      <div class="cred-item reveal reveal-delay-2">
+        <div class="cred-icon">&#10022; Industry Credit</div>
+        <div class="cred-headline">Freelance Writer — SM Entertainment</div>
+        <div class="cred-sub">Collaborated with some of the biggest artists in the global music industry</div>
+      </div>
+      <div class="cred-item reveal reveal-delay-3">
+        <div class="cred-icon">&#10022; Live</div>
+        <div class="cred-headline">Worldwide Tours</div>
+        <div class="cred-sub">Performed globally under the AC13 project across international stages</div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- NOT AI — HUMAN CONNECTION -->
+  <div class="human-section">
+    <!-- 3D scene fills entire section -->
+    <spline-viewer class="human-spline" url="https://prod.spline.design/Y0DB2GAlOgM0E2eb/scene.splinecode"></spline-viewer>
+    <!-- Gradient so left-side text stays readable -->
+    <div class="human-overlay"></div>
+    <!-- Text content -->
+    <div class="human-content">
+      <div class="section-label reveal">Real Music</div>
+      <h2 class="human-heading reveal reveal-delay-1">
+        NOT AI.<br>
+        <span class="red">MADE BY</span><br>
+        <span class="outline">HUMANS.</span>
+      </h2>
+      <p class="human-body reveal reveal-delay-2">
+        AI can replicate a sound. <strong>It can't replicate the reason behind it.</strong>
+        Every score starts with a conversation — understanding your project, your audience,
+        the exact emotion you need to land. That's not something a model can do.
+        Human composition means <strong>intention in every note</strong>, lived experience
+        in every decision, and one person who genuinely cares whether it works.
+        <br><br>
+        Music made by a human hits differently. Your audience will feel it,
+        even if they can't explain why.
+      </p>
+      <div class="human-tags">
+        <span class="human-tag">Written by a human</span>
+        <span class="human-tag">Zero AI generation</span>
+        <span class="human-tag">Real emotion</span>
+        <span class="human-tag">Real accountability</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEET THE PRODUCER -->
+  <div class="producer-section">
+    <div class="producer-wrap">
+
+      <div class="producer-photos reveal">
+        <img class="producer-photo-main" src="_RAV3298.JPG" alt="Jay Carmen in the studio" />
+        <img class="producer-photo-accent" src="IMG_4104.JPEG" alt="Jay Carmen at work" />
+      </div>
+
+      <div class="producer-text">
+        <div class="section-label reveal">Behind the music</div>
+        <h2 class="producer-name reveal reveal-delay-1">JAY<br>CARMEN</h2>
+        <div class="producer-aka reveal reveal-delay-1">AKA AC13 &nbsp;—&nbsp; London</div>
+
+        <div class="producer-stats reveal reveal-delay-2">
+          <div class="producer-stat">
+            <div class="producer-stat-num">10+</div>
+            <div class="producer-stat-label">Years producing</div>
+          </div>
+          <div class="producer-stat">
+            <div class="producer-stat-num">2x</div>
+            <div class="producer-stat-label">Industry awards</div>
+          </div>
+          <div class="producer-stat">
+            <div class="producer-stat-num">WW</div>
+            <div class="producer-stat-label">Worldwide tours</div>
+          </div>
+          <div class="producer-stat">
+            <div class="producer-stat-num">53M+</div>
+            <div class="producer-stat-label">Streams</div>
+          </div>
+        </div>
+
+        <p class="producer-bio reveal reveal-delay-2">
+          Jay Carmen built his name in <strong>drum & bass</strong> — one of the most technically
+          demanding and emotionally charged genres in electronic music. Two industry awards and
+          worldwide touring later, the AC13 project had taken him across continents and onto some
+          of the world's most respected stages.
+          <br><br>
+          But the sound never stayed in one lane. A decade of production means fluency across
+          <strong>cinematic scoring, K-pop, metal, orchestral, ambient and pop</strong> — not as
+          a side skill, but as a genuine craft. That range is what landed a shortlist with
+          <strong>SM Entertainment</strong>, one of the most competitive writing pools in the
+          global music industry.
+          <br><br>
+          Based in London. Working with clients worldwide. Every project handled personally —
+          no team, no handoffs, no compromise.
+        </p>
+
+        <div class="producer-location reveal reveal-delay-3">London, UK &nbsp;·&nbsp; Available remotely worldwide</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- WAVE VISUAL -->
+  <div class="wave-section">
+    <canvas id="wave-canvas"></canvas>
+    <div class="wave-label">Move your cursor</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="section-label reveal">Pricing</div>
+    <h2 class="section-title reveal reveal-delay-1"><span class="title-inner">PICK YOUR<br>PROJECT.</span></h2>
+    <p class="section-body reveal reveal-delay-2">Three tiers. No hidden costs. Full sync license included on everything.</p>
+    <div class="services-grid">
+      <div class="service-card reveal reveal-delay-1">
+        <div class="service-tag">Quick Score</div>
+        <div class="service-name">SHORT FORM</div>
+        <div class="service-price">&#163;350 <span>&#8212; &#163;500</span></div>
+        <div class="service-divider"></div>
+        <ul class="service-features">
+          <li>Up to 60 seconds</li>
+          <li>Stems included</li>
+          <li>Full usage license</li>
+          <li>2 rounds of revisions</li>
+          <li>Ads, reels, YouTube</li>
+        </ul>
+      </div>
+      <div class="service-card featured reveal reveal-delay-2">
+        <div class="service-tag">Most Popular</div>
+        <div class="service-name">FULL SCORE</div>
+        <div class="service-price">&#163;700 <span>&#8212; &#163;1,200</span></div>
+        <div class="service-divider"></div>
+        <ul class="service-features">
+          <li>1 &#8212; 5 minutes</li>
+          <li>Stems + alternate mix</li>
+          <li>Full usage license</li>
+          <li>2 rounds of revisions</li>
+          <li>Films, games, trailers</li>
+        </ul>
+      </div>
+      <div class="service-card reveal reveal-delay-3">
+        <div class="service-tag">Ongoing</div>
+        <div class="service-name">RETAINER</div>
+        <div class="service-price">&#163;2,000 <span>/mo</span></div>
+        <div class="service-divider"></div>
+        <ul class="service-features">
+          <li>Up to 8 cues per month</li>
+          <li>Priority turnaround</li>
+          <li>Consistent brand sound</li>
+          <li>Dedicated project folder</li>
+          <li>Agencies &amp; studios</li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top:32px; font-size:12px; color:#333; letter-spacing:1px;">
+      ADD-ONS &nbsp;&#8212;&nbsp; Live vocal +&#163;150 &nbsp;&#183;&nbsp; Full buyout +&#163;300 &nbsp;&#183;&nbsp; Rush delivery +&#163;200 &nbsp;&#183;&nbsp; Extra stems +&#163;75
+    </p>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- HOW IT WORKS -->
+  <section>
+    <div class="section-label reveal">Process</div>
+    <h2 class="section-title reveal reveal-delay-1"><span class="title-inner">HOW IT<br>WORKS.</span></h2>
+    <div class="steps-wrap">
+      <div class="step-row reveal">
+        <div class="step-n">01</div>
+        <div class="step-content">
+          <div class="step-title">Fill in the brief</div>
+          <div class="step-desc">A short intake form captures mood, references, platform and deadline. This defines the scope and protects both of us.</div>
+        </div>
+        <div class="step-badge">5 minutes</div>
+      </div>
+      <div class="step-row reveal">
+        <div class="step-n">02</div>
+        <div class="step-content">
+          <div class="step-title">50% deposit to confirm</div>
+          <div class="step-desc">A payment link is sent. Once the deposit lands, your slot is confirmed and work begins.</div>
+        </div>
+        <div class="step-badge">Secure</div>
+      </div>
+      <div class="step-row reveal">
+        <div class="step-n">03</div>
+        <div class="step-content">
+          <div class="step-title">Delivery via private link</div>
+          <div class="step-desc">Your track arrives as a private download link. Listen, share with your team, take your time.</div>
+        </div>
+        <div class="step-badge">Async</div>
+      </div>
+      <div class="step-row reveal">
+        <div class="step-n">04</div>
+        <div class="step-content">
+          <div class="step-title">Revisions until it matches</div>
+          <div class="step-desc">Up to two rounds of revisions based on the original brief. Notes in, changes out &#8212; same day.</div>
+        </div>
+        <div class="step-badge">Included</div>
+      </div>
+      <div class="step-row reveal">
+        <div class="step-n">05</div>
+        <div class="step-content">
+          <div class="step-title">Final payment, final files</div>
+          <div class="step-desc">Once approved, remaining balance is settled and WAV + stems are sent. All yours.</div>
+        </div>
+        <div class="step-badge">Done</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GUARANTEE -->
+  <section style="padding-top:0;">
+    <div class="guarantee-block reveal">
+      <div class="big-text">YOU DON'T PAY<br>UNTIL IT'S <span class="red">RIGHT.</span></div>
+      <p>
+        If the delivery doesn't match your brief, I revise it until it does &#8212;
+        <strong>at no extra cost.</strong> Scope changes after delivery are quoted separately.
+        Simple, fair, protected on both sides.
+      </p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="cta-section" id="book">
+    <h2 class="cta-big reveal">
+      LET'S<br>
+      <span class="red">BUILD</span><br>
+      <span class="outline">SOMETHING.</span>
+    </h2>
+    <p class="cta-sub reveal reveal-delay-1">Tell me what you're working on. I'll tell you if I can help.</p>
+    <a href="mailto:YOUR@EMAIL.COM" class="btn-primary reveal reveal-delay-2">Send a brief</a>
+    <br>
+    <a href="mailto:YOUR@EMAIL.COM" class="cta-email reveal reveal-delay-3">YOUR@EMAIL.COM</a>
+  </div>
+
+  <footer>
+    <div class="footer-logo">YSD<span>.</span>AUDIO</div>
+    <div class="footer-copy">YSD Audio &#8212; Score &amp; Composition &#8212; Available for projects worldwide</div>
+  </footer>
+
+  <script>
+
+    // ── HERO CANVAS DOT GRID ──
+    (function() {
+      const canvas = document.getElementById('hero-canvas');
+      const ctx = canvas.getContext('2d');
+      const SPACING = 36;
+      const DOT_R = 1.2;
+      const REPEL_RADIUS = 120;
+      const REPEL_STRENGTH = 40;
+      const LERP = 0.08;
+
+      let mouse = { x: -9999, y: -9999 };
+      let dots = [];
+      let W, H;
+
+      function resize() {
+        W = canvas.offsetWidth;
+        H = canvas.offsetHeight;
+        canvas.width = W;
+        canvas.height = H;
+        buildGrid();
+      }
+
+      function buildGrid() {
+        dots = [];
+        const cols = Math.ceil(W / SPACING) + 1;
+        const rows = Math.ceil(H / SPACING) + 1;
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            dots.push({ ox: c * SPACING, oy: r * SPACING, x: c * SPACING, y: r * SPACING });
+          }
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        for (const d of dots) {
+          const dx = d.ox - mouse.x;
+          const dy = d.oy - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          let tx = d.ox, ty = d.oy;
+          if (dist < REPEL_RADIUS && dist > 0) {
+            const force = (1 - dist / REPEL_RADIUS) * REPEL_STRENGTH;
+            tx = d.ox + (dx / dist) * force;
+            ty = d.oy + (dy / dist) * force;
+          }
+          d.x += (tx - d.x) * LERP;
+          d.y += (ty - d.y) * LERP;
+          const proximity = Math.max(0, 1 - dist / REPEL_RADIUS);
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, DOT_R + proximity * 1.2, 0, Math.PI * 2);
+          ctx.fillStyle = dist < REPEL_RADIUS
+            ? `rgba(${Math.round(215 * proximity) + 30}, ${Math.round(38 * proximity) + 5}, ${Math.round(56 * proximity) + 10}, ${0.12 + proximity * 0.45})`
+            : `rgba(255,255,255,0.1)`;
+          ctx.fill();
+        }
+        requestAnimationFrame(draw);
+      }
+
+      const hero = canvas.closest('.hero');
+      hero.addEventListener('mousemove', e => {
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+      });
+      hero.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+      window.addEventListener('resize', resize);
+      resize();
+      draw();
+    })();
+
+    // ── SPLINE — HIDE TEXT OBJECT ──
+    (function() {
+      const viewer = document.querySelector('.human-spline');
+      if (!viewer) return;
+      function tryHide() {
+        const app = viewer._app;
+        if (!app) return;
+        // Try every object in the scene and hide anything that looks like text
+        const tryNames = [
+          'Text', 'text', 'Round', 'round', 'Marquee', 'marquee',
+          'Label', 'label', 'Caption', 'caption', 'Message', 'Slogan',
+          'make it better', 'round and round', 'Round and round'
+        ];
+        tryNames.forEach(name => {
+          try {
+            const obj = app.findObjectByName(name);
+            if (obj) { obj.visible = false; }
+          } catch(e) {}
+        });
+        // Also try iterating all objects if the runtime exposes them
+        try {
+          const all = app._scene ? app._scene.children : [];
+          all.forEach(function hide(o) {
+            if (!o) return;
+            const n = (o.name || '').toLowerCase();
+            if (n.includes('text') || n.includes('round') || n.includes('make') || n.includes('better') || n.includes('marquee')) {
+              o.visible = false;
+            }
+            if (o.children) o.children.forEach(hide);
+          });
+        } catch(e) {}
+      }
+      viewer.addEventListener('load', () => { setTimeout(tryHide, 100); });
+    })();
+
+    // ── WAVE CANVAS ──
+    (function() {
+      const canvas = document.getElementById('wave-canvas');
+      const ctx = canvas.getContext('2d');
+
+      let W, H, time = 0;
+      let mouse  = { x: 0.5, y: 0.5 };
+      let target = { x: 0.5, y: 0.5 };
+
+      const waves = [
+        { amp: 55, freq: 0.0055, speed: 0.30, phase: 0.0, thick: 1.5, opacity: 0.20 },
+        { amp: 35, freq: 0.0090, speed: 0.50, phase: 1.8, thick: 1.0, opacity: 0.12 },
+        { amp: 75, freq: 0.0035, speed: 0.18, phase: 3.4, thick: 2.0, opacity: 0.14 },
+        { amp: 28, freq: 0.0140, speed: 0.70, phase: 0.9, thick: 0.8, opacity: 0.08 },
+        { amp: 50, freq: 0.0070, speed: 0.40, phase: 2.5, thick: 1.2, opacity: 0.10 },
+        { amp: 90, freq: 0.0025, speed: 0.12, phase: 5.0, thick: 2.5, opacity: 0.07 },
+      ];
+
+      function resize() {
+        W = canvas.offsetWidth;
+        H = canvas.offsetHeight;
+        canvas.width  = W;
+        canvas.height = H;
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+
+        // Smooth mouse lerp
+        mouse.x += (target.x - mouse.x) * 0.04;
+        mouse.y += (target.y - mouse.y) * 0.04;
+
+        time += 0.008;
+        const scrollFactor = window.scrollY * 0.0008;
+
+        waves.forEach(w => {
+          const ampScale  = 0.6 + mouse.y * 0.9;
+          const phaseShift = w.phase + (time * w.speed) + scrollFactor + (mouse.x - 0.5) * 4;
+          const amp = w.amp * ampScale;
+          const midY = H * 0.5;
+
+          ctx.beginPath();
+          for (let x = 0; x <= W; x += 3) {
+            const y = midY
+              + Math.sin(x * w.freq + phaseShift) * amp
+              + Math.sin(x * w.freq * 1.7 + phaseShift * 0.6) * amp * 0.25;
+            x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+          }
+
+          // Stroke line
+          ctx.strokeStyle = `rgba(215,38,56,${w.opacity + mouse.y * 0.08})`;
+          ctx.lineWidth   = w.thick;
+          ctx.stroke();
+
+          // Fill below with gradient for depth
+          ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+          const grad = ctx.createLinearGradient(0, midY, 0, H);
+          grad.addColorStop(0, `rgba(215,38,56,${w.opacity * 0.5})`);
+          grad.addColorStop(1, `rgba(215,38,56,0)`);
+          ctx.fillStyle = grad;
+          ctx.fill();
+        });
+
+        requestAnimationFrame(draw);
+      }
+
+      const section = canvas.closest('.wave-section');
+      section.addEventListener('mousemove', e => {
+        const r = canvas.getBoundingClientRect();
+        target.x = (e.clientX - r.left) / W;
+        target.y = (e.clientY - r.top)  / H;
+      });
+      section.addEventListener('mouseleave', () => {
+        target.x = 0.5;
+        target.y = 0.5;
+      });
+
+      window.addEventListener('resize', resize);
+      resize();
+      draw();
+    })();
+
+    // ── NAV SCROLL ──
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // ── SCROLL REVEAL ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // ── PARALLAX HERO TEXT ──
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      const title = document.querySelector('.hero-title');
+      const sub = document.querySelector('.hero-sub');
+      if (title) title.style.transform = `translateY(${y * 0.15}px)`;
+      if (sub) sub.style.transform = `translateY(${y * 0.08}px)`;
+    });
+
+    // ── FILM GRAIN ──
+    (function() {
+      const canvas = document.getElementById('grain');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+
+      function resize() {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+
+      function renderGrain() {
+        const W = canvas.width, H = canvas.height;
+        const img = ctx.createImageData(W, H);
+        const d = img.data;
+        for (let i = 0; i < d.length; i += 4) {
+          const v = (Math.random() * 255) | 0;
+          d[i] = d[i+1] = d[i+2] = v;
+          d[i+3] = 255;
+        }
+        ctx.putImageData(img, 0, 0);
+      }
+
+      resize();
+      renderGrain();
+      setInterval(renderGrain, 80);
+      window.addEventListener('resize', () => { resize(); renderGrain(); });
+    })();
+
+    // ── SCROLL PROGRESS BAR ──
+    (function() {
+      const bar = document.getElementById('progress-bar');
+      if (!bar) return;
+      window.addEventListener('scroll', () => {
+        const scrolled = window.scrollY;
+        const total    = document.documentElement.scrollHeight - window.innerHeight;
+        bar.style.width = (total > 0 ? (scrolled / total) * 100 : 0) + '%';
+      }, { passive: true });
+    })();
+
+    // ── ANIMATED DIVIDERS ──
+    (function() {
+      const divObs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) { e.target.classList.add('line-visible'); divObs.unobserve(e.target); }
+        });
+      }, { threshold: 0.5 });
+      document.querySelectorAll('.divider').forEach(el => divObs.observe(el));
+    })();
+
+    // ── MAGNETIC BUTTONS ──
+    (function() {
+      const STRENGTH = 0.35;
+      document.querySelectorAll('.btn-primary, .nav-book').forEach(btn => {
+        btn.addEventListener('mousemove', e => {
+          const r  = btn.getBoundingClientRect();
+          const cx = r.left + r.width  / 2;
+          const cy = r.top  + r.height / 2;
+          const dx = (e.clientX - cx) * STRENGTH;
+          const dy = (e.clientY - cy) * STRENGTH;
+          btn.style.transform = `translate(${dx}px, ${dy}px)`;
+        });
+        btn.addEventListener('mouseleave', () => {
+          btn.style.transform = '';
+        });
+      });
+    })();
+
+    // ── MARQUEE SPEED ON HOVER ──
+    (function() {
+      const track = document.querySelector('.marquee-track');
+      if (!track) return;
+      const wrap = track.closest('.marquee-wrap');
+      wrap.addEventListener('mouseenter', () => { track.style.animationDuration = '8s'; });
+      wrap.addEventListener('mouseleave', () => { track.style.animationDuration = '20s'; });
+    })();
+
+    // ── DIFF CARD OBSERVER ──
+    (function() {
+      const cardObs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) { e.target.classList.add('visible'); cardObs.unobserve(e.target); }
+        });
+      }, { threshold: 0.15 });
+      document.querySelectorAll('.diff-card').forEach(el => cardObs.observe(el));
+    })();
+
+  </script>
+</body>
+</html>
