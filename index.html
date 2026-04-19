@@ -901,22 +901,100 @@
 
     /* ── RESPONSIVE ── */
     @media (max-width: 768px) {
-      nav { padding: 20px 24px; }
-      nav.scrolled { padding: 14px 24px; }
-      .hero { padding: 100px 24px 120px; }
-      .hero::before { width: 100%; -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%); mask-image: linear-gradient(to bottom, black 40%, transparent 100%); filter: brightness(0.25) saturate(1.1); }
-      .hero-stats { right: 24px; gap: 24px; bottom: 40px; }
-      .stat-num { font-size: 32px; }
-      section { padding: 80px 24px; }
-      .guarantee-block { padding: 40px 32px; }
+      /* Stop any horizontal overflow causing the side bar */
+      html, body { overflow-x: hidden; max-width: 100%; }
+
+      /* Nav */
+      nav { padding: 18px 20px; }
+      nav.scrolled { padding: 12px 20px; }
+      .nav-book { padding: 8px 18px; font-size: 11px; }
+
+      /* Hero */
+      .hero { padding: 100px 20px 100px; min-height: 100svh; }
+      .hero::before {
+        width: 100%;
+        -webkit-mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
+        mask-image: linear-gradient(to bottom, black 30%, transparent 100%);
+        filter: brightness(0.2) saturate(1.1);
+      }
+      .hero-title { font-size: clamp(64px, 18vw, 96px); margin-bottom: 20px; }
+      .hero-sub { font-size: 14px; margin-bottom: 32px; }
+      .hero-cta { gap: 12px; }
+      .btn-primary { padding: 14px 28px; font-size: 12px; }
+      /* Move stats inline below CTA instead of absolute */
+      .hero-stats {
+        position: relative;
+        bottom: auto; right: auto;
+        display: flex;
+        gap: 32px;
+        margin-top: 40px;
+        justify-content: flex-start;
+        opacity: 1;
+        animation: none;
+      }
+      .stat-item { text-align: left; }
+      .stat-num { font-size: 28px; }
+      .stat-label { font-size: 9px; }
+      .scroll-line { display: none; }
+
+      /* Sections */
+      section { padding: 64px 20px; }
+
+      /* Marquee — prevent overflow */
+      .marquee-wrap { overflow: hidden; max-width: 100vw; }
+      .marquee-item { font-size: 14px; padding: 0 24px; }
+
+      /* Creds */
       .creds-strip { grid-template-columns: 1fr; }
-      .diff-grid, .services-grid { grid-template-columns: 1fr; }
-      footer { padding: 32px 24px; }
-      .cta-section { padding: 100px 24px; }
-      .step-row { grid-template-columns: 56px 1fr; gap: 24px; }
+      .cred-item { padding: 28px 20px; }
+      .cred-headline { font-size: 22px; }
+
+      /* Services */
+      .services-grid { grid-template-columns: 1fr; }
+      .service-card { padding: 40px 24px; }
+
+      /* Steps */
+      .step-row { grid-template-columns: 48px 1fr; gap: 16px; padding: 28px 0; }
+      .step-n { font-size: 40px; }
       .step-badge { display: none; }
-      .human-section { min-height: 600px; }
-      .human-content { padding: 80px 24px; }
+      .step-title { font-size: 16px; }
+
+      /* Guarantee */
+      .guarantee-block { padding: 40px 20px; }
+
+      /* CTA */
+      .cta-section { padding: 80px 20px; }
+      .cta-big { font-size: clamp(52px, 16vw, 80px); }
+
+      /* Human / Not AI section */
+      .human-section { min-height: 520px; }
+      .human-overlay {
+        background: linear-gradient(to bottom, rgba(10,10,10,0.75) 0%, rgba(10,10,10,0.55) 100%);
+      }
+      .human-content { padding: 60px 20px; }
+      .human-heading { font-size: clamp(48px, 14vw, 72px); }
+      .human-body { font-size: 14px; }
+      .human-tags { gap: 8px; }
+      .human-tag { font-size: 9px; padding: 7px 12px; }
+      /* Keep Spline badge covered on mobile */
+      .human-section::after { width: 200px; height: 60px; }
+
+      /* Producer section */
+      .producer-wrap { grid-template-columns: 1fr; gap: 40px; padding: 64px 20px; }
+      .producer-photos { height: 340px; }
+      .producer-photo-main { width: 85%; height: 85%; }
+      .producer-photo-accent { width: 52%; height: 48%; }
+      .producer-name { font-size: clamp(48px, 14vw, 72px); }
+      .producer-stats { grid-template-columns: repeat(2, 1fr); }
+      .producer-stat { padding: 16px 12px; }
+      .producer-stat-num { font-size: 28px; }
+      .producer-bio { font-size: 14px; }
+
+      /* Footer */
+      footer { padding: 28px 20px; flex-direction: column; align-items: flex-start; gap: 8px; }
+
+      /* Section titles */
+      .section-title { font-size: clamp(40px, 12vw, 64px); }
     }
   </style>
 </head>
