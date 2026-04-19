@@ -618,6 +618,26 @@
       filter: hue-rotate(-28deg) saturate(1.15);
     }
     #loader-spline::part(logo) { display: none !important; }
+    #loader-logo {
+      position: absolute;
+      bottom: 48px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 32px;
+      letter-spacing: 8px;
+      color: var(--white);
+      pointer-events: none;
+      opacity: 0;
+      animation: loaderFadeUp 0.8s 0.4s forwards;
+    }
+    #loader-logo span { color: var(--red); }
+    @keyframes loaderFadeUp {
+      from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
     /* Hard cover over Spline watermark in loader (bottom-right) */
     #loader-badge-cover {
       position: absolute;
@@ -905,8 +925,8 @@
   <!-- LOADING SCREEN -->
   <div id="loader">
     <spline-viewer id="loader-spline" url="https://prod.spline.design/Y0DB2GAlOgM0E2eb/scene.splinecode"></spline-viewer>
-    <!-- Cover Spline watermark button -->
     <div id="loader-badge-cover"></div>
+    <div id="loader-logo">YSD<span>.</span>AUDIO</div>
   </div>
 
   <!-- Dynamic UI overlays -->
