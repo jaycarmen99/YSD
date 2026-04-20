@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
@@ -22,12 +23,10 @@
     ::-webkit-scrollbar-track { background: var(--black); }
     ::-webkit-scrollbar-thumb { background: var(--red); }
 
-    /* ── CURSOR ── */
     @media (hover: hover) {
       * { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='20' viewBox='0 0 14 20'%3E%3Cpath d='M1 1 L1 16 L5 12 L7.5 18.5 L10 17.5 L7.5 11 L12.5 11 Z' fill='%23D72638' stroke='%23000' stroke-width='0.8' stroke-linejoin='round'/%3E%3C/svg%3E") 1 1, auto !important; }
     }
 
-    /* ── PROGRESS BAR ── */
     #progress-bar { position: fixed; top: 0; left: 0; height: 2px; width: 0%; background: var(--red); z-index: 9997; transition: width 0.1s linear; box-shadow: 0 0 8px rgba(215,38,56,0.6); }
 
     /* ── NAV ── */
@@ -37,141 +36,108 @@
       padding: 24px 48px;
       transition: background 0.4s, padding 0.4s;
     }
-    nav.scrolled {
-      background: rgba(10,10,10,0.95); padding: 16px 48px;
-      backdrop-filter: blur(10px); border-bottom: 1px solid #1a1a1a;
-    }
+    nav.scrolled { background: rgba(10,10,10,0.95); padding: 16px 48px; backdrop-filter: blur(10px); border-bottom: 1px solid #1a1a1a; }
     .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
     .nav-logo span { color: var(--red); }
     .nav-right { display: flex; align-items: center; gap: 32px; }
-    .nav-demos { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--red); font-weight: 700; text-decoration: none; border-bottom: 1px solid var(--red); padding-bottom: 2px; }
-    .nav-book {
-      background: var(--red); color: var(--white); border: none;
-      padding: 10px 28px; font-family: 'Inter', sans-serif; font-weight: 700;
-      font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
-      cursor: pointer; text-decoration: none; transition: background 0.2s, transform 0.2s; display: inline-block;
-    }
+    .nav-demos { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--white); font-weight: 700; text-decoration: none; border-bottom: 1px solid var(--red); padding-bottom: 2px; }
+    .nav-book { background: var(--red); color: var(--white); border: none; padding: 10px 28px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; transition: background 0.2s, transform 0.2s; display: inline-block; }
     .nav-book:hover { background: var(--red-dark); transform: translateY(-1px); }
 
-    /* ── HERO ── */
-    .page-hero {
-      padding: 180px 48px 80px;
-      max-width: 1200px; margin: 0 auto;
+    /* ── SCROLL HERO ── */
+    #hero-scroll { height: 280vh; position: relative; }
+    #hero-sticky {
+      position: sticky; top: 0; height: 100vh;
+      overflow: hidden; display: flex; align-items: center; justify-content: center;
     }
-    .page-label { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); font-weight: 600; margin-bottom: 16px; }
-    .page-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(64px, 10vw, 120px);
-      line-height: 0.9; letter-spacing: 2px; margin-bottom: 24px;
+    #three-canvas {
+      position: absolute; inset: 0; width: 100%; height: 100%;
     }
-    .page-title .outline { -webkit-text-stroke: 2px var(--white); color: transparent; }
-    .page-title .red { color: var(--red); }
-    .page-sub { font-size: 15px; color: #666; font-weight: 300; max-width: 480px; line-height: 1.7; }
 
-    /* ── DEMOS GRID ── */
-    .demos-wrap { max-width: 1200px; margin: 0 auto; padding: 0 48px 120px; }
-
-    .demo-card {
-      background: #0d0d0d;
-      border-top: 2px solid #1a1a1a;
-      margin-bottom: 2px;
-      transition: border-color 0.3s;
-      overflow: hidden;
+    /* Text layers — fade in/out based on scroll phase */
+    .hero-phase {
+      position: absolute;
+      left: 48px; bottom: 80px;
+      z-index: 2;
+      pointer-events: none;
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      opacity: 0;
+      transform: translateY(20px);
     }
+    .hero-phase.active { opacity: 1; transform: translateY(0); }
+    .hero-phase .phase-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); font-weight: 700; margin-bottom: 12px; }
+    .hero-phase .phase-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(52px, 8vw, 100px); line-height: 0.9; letter-spacing: 2px; color: var(--white); margin-bottom: 16px; }
+    .hero-phase .phase-title .red { color: var(--red); }
+    .hero-phase .phase-title .outline { -webkit-text-stroke: 2px #333; color: transparent; }
+    .hero-phase .phase-sub { font-size: 14px; color: #555; font-weight: 300; max-width: 420px; line-height: 1.7; }
+
+    /* Scroll hint */
+    #scroll-hint {
+      position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
+      z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 8px;
+      opacity: 1; transition: opacity 0.4s;
+    }
+    #scroll-hint span { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: #333; }
+    #scroll-hint .line { width: 1px; height: 40px; background: linear-gradient(to bottom, #333, transparent); animation: scrollPulse 1.8s ease-in-out infinite; }
+    @keyframes scrollPulse { 0%,100% { opacity: 0.3; transform: scaleY(0.6); } 50% { opacity: 1; transform: scaleY(1); } }
+
+    /* State label top right */
+    #state-label {
+      position: absolute; top: 96px; right: 48px; z-index: 2;
+      font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: #222;
+      font-family: 'Bebas Neue', sans-serif; font-size: 13px;
+      transition: color 0.6s;
+    }
+
+    /* ── DEMOS ── */
+    .demos-wrap { max-width: 1200px; margin: 0 auto; padding: 80px 48px 120px; }
+
+    .demo-card { background: #0d0d0d; border-top: 2px solid #1a1a1a; margin-bottom: 2px; transition: border-color 0.3s; overflow: hidden; }
     .demo-card:hover { border-color: var(--red); }
 
-    .demo-header {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: center;
-      padding: 36px 40px;
-      gap: 24px;
-    }
-    .demo-meta {}
-    .demo-category {
-      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
-      color: var(--red); font-weight: 700; margin-bottom: 10px;
-    }
-    .demo-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(28px, 4vw, 48px);
-      line-height: 1; color: var(--white); margin-bottom: 8px;
-    }
+    .demo-header { display: grid; grid-template-columns: 1fr auto; align-items: center; padding: 36px 40px; gap: 24px; }
+    .demo-category { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--red); font-weight: 700; margin-bottom: 10px; }
+    .demo-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(28px, 4vw, 48px); line-height: 1; color: var(--white); margin-bottom: 8px; }
     .demo-desc { font-size: 13px; color: #555; font-weight: 300; line-height: 1.6; max-width: 560px; }
-    .demo-tag {
-      font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-      padding: 8px 16px; border: 1px solid #1f1f1f; color: #444; font-weight: 600;
-      white-space: nowrap; align-self: flex-start;
-    }
+    .demo-tag { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; padding: 8px 16px; border: 1px solid #1f1f1f; color: #444; font-weight: 600; white-space: nowrap; align-self: flex-start; }
 
-    /* Video player */
-    .demo-video-wrap {
-      padding: 0 40px 40px;
-    }
-    video {
-      width: 100%;
-      display: block;
-      background: #000;
-      outline: none;
-    }
-    video::-webkit-media-controls-panel { background: #111; }
+    .demo-video-wrap { padding: 0 40px 40px; }
+    video { width: 100%; display: block; background: #000; outline: none; }
 
-    /* ── COMING SOON CARDS ── */
-    .demo-coming {
-      background: #080808;
-      border-top: 2px solid #141414;
-      margin-bottom: 2px;
-      padding: 40px 40px;
-      display: flex; align-items: center; justify-content: space-between; gap: 24px;
-    }
-    .coming-meta {}
+    .demo-coming { background: #080808; border-top: 2px solid #141414; margin-bottom: 2px; padding: 40px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
     .coming-category { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: #333; font-weight: 700; margin-bottom: 10px; }
     .coming-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(24px, 3vw, 40px); color: #222; line-height: 1; }
     .coming-badge { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #222; font-weight: 600; border: 1px solid #1a1a1a; padding: 8px 16px; white-space: nowrap; }
 
     /* ── CTA ── */
-    .demos-cta {
-      max-width: 1200px; margin: 0 auto;
-      padding: 80px 48px 120px;
-      border-top: 1px solid #141414;
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 32px;
-    }
-    .demos-cta-text {}
+    .demos-cta { max-width: 1200px; margin: 0 auto; padding: 80px 48px 120px; border-top: 1px solid #141414; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 32px; }
     .demos-cta-label { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); font-weight: 600; margin-bottom: 12px; }
     .demos-cta-heading { font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 5vw, 64px); line-height: 0.95; }
-    .btn-primary {
-      background: var(--red); color: var(--white); padding: 16px 40px;
-      font-weight: 700; font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
-      text-decoration: none; transition: background 0.2s, transform 0.2s; display: inline-block; white-space: nowrap;
-    }
+    .btn-primary { background: var(--red); color: var(--white); padding: 16px 40px; font-weight: 700; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; transition: background 0.2s, transform 0.2s; display: inline-block; white-space: nowrap; }
     .btn-primary:hover { background: var(--red-dark); transform: translateY(-2px); }
 
-    /* ── FOOTER ── */
-    footer {
-      border-top: 1px solid #141414; padding: 40px 48px;
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
-    }
+    footer { border-top: 1px solid #141414; padding: 40px 48px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
     .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: #333; }
     .footer-logo span { color: var(--red); }
     .footer-copy { font-size: 12px; color: #333; letter-spacing: 1px; }
 
-    /* ── REVEAL ── */
     .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.7s ease, transform 0.7s ease; }
     .reveal.visible { opacity: 1; transform: translateY(0); }
     .reveal-delay-1 { transition-delay: 0.1s; }
     .reveal-delay-2 { transition-delay: 0.2s; }
     .reveal-delay-3 { transition-delay: 0.3s; }
 
-    /* ── MOBILE ── */
     @media (max-width: 768px) {
       nav { padding: 18px 20px; }
       nav.scrolled { padding: 12px 20px; }
-      .nav-book { padding: 8px 18px; font-size: 11px; }
-      .page-hero { padding: 140px 20px 48px; }
-      .demos-wrap { padding: 0 20px 80px; }
-      .demo-header { padding: 28px 20px; grid-template-columns: 1fr; }
-      .demo-video-wrap { padding: 0 20px 28px; }
-      .demo-coming { padding: 28px 20px; flex-direction: column; align-items: flex-start; }
+      .hero-phase { left: 20px; bottom: 60px; }
+      .hero-phase .phase-title { font-size: clamp(44px, 14vw, 72px); }
+      #state-label { right: 20px; }
+      #scroll-hint { display: none; }
+      .demos-wrap { padding: 48px 20px 80px; }
+      .demo-header { padding: 24px 20px; grid-template-columns: 1fr; }
+      .demo-video-wrap { padding: 0 20px 24px; }
+      .demo-coming { padding: 24px 20px; flex-direction: column; align-items: flex-start; }
       .demos-cta { padding: 60px 20px 80px; flex-direction: column; }
       footer { padding: 28px 20px; flex-direction: column; align-items: flex-start; }
     }
@@ -189,23 +155,49 @@
     </div>
   </nav>
 
-  <!-- PAGE HEADER -->
-  <div class="page-hero">
-    <div class="page-label reveal">Work</div>
-    <h1 class="page-title reveal reveal-delay-1">
-      THE<br>
-      <span class="red">REEL.</span>
-    </h1>
-    <p class="page-sub reveal reveal-delay-2">A selection of original compositions across ad scoring, cinematic, game audio and more. Every track written and produced by one person.</p>
+  <!-- ── 3D SCROLL HERO ── -->
+  <div id="hero-scroll">
+    <div id="hero-sticky">
+
+      <canvas id="three-canvas"></canvas>
+
+      <!-- Phase 0: Sphere — intro -->
+      <div class="hero-phase active" id="phase-0">
+        <div class="phase-label">&#10022; Demo Reel</div>
+        <div class="phase-title">THE<br><span class="red">REEL.</span></div>
+        <div class="phase-sub">Original compositions. Scroll to explore.</div>
+      </div>
+
+      <!-- Phase 1: Helix — genre range -->
+      <div class="hero-phase" id="phase-1">
+        <div class="phase-label">&#10022; Range</div>
+        <div class="phase-title">EVERY<br><span class="red">GENRE.</span><br><span class="outline">ONE MIND.</span></div>
+        <div class="phase-sub">Ad scoring, cinematic, D&B, orchestral — written and produced by one person.</div>
+      </div>
+
+      <!-- Phase 2: Scatter — CTA -->
+      <div class="hero-phase" id="phase-2">
+        <div class="phase-label">&#10022; The Work</div>
+        <div class="phase-title">HEAR IT<br><span class="red">BELOW.</span></div>
+        <div class="phase-sub">Three tracks. Three briefs. Every note human-made.</div>
+      </div>
+
+      <div id="state-label">SPHERE</div>
+
+      <div id="scroll-hint">
+        <span>Scroll</span>
+        <div class="line"></div>
+      </div>
+
+    </div>
   </div>
 
-  <!-- DEMOS -->
+  <!-- ── DEMOS ── -->
   <div class="demos-wrap">
 
-    <!-- DEMO 1 — Ad Scoring -->
     <div class="demo-card reveal">
       <div class="demo-header">
-        <div class="demo-meta">
+        <div>
           <div class="demo-category">&#10022; Ad Scoring</div>
           <div class="demo-title">ANTIORDINARY — Brand Film</div>
           <div class="demo-desc">Original composition written for a brand film brief. Built to drive tension and forward momentum — designed to sit under visuals and amplify the message without overriding it.</div>
@@ -215,15 +207,13 @@
       <div class="demo-video-wrap">
         <video controls preload="metadata">
           <source src="demo-antiordinary-ad.mp4" type="video/mp4">
-          Your browser does not support the video tag.
         </video>
       </div>
     </div>
 
-    <!-- DEMO 2 — Bon Iver Practice Score -->
     <div class="demo-card reveal reveal-delay-1">
       <div class="demo-header">
-        <div class="demo-meta">
+        <div>
           <div class="demo-category">&#10022; Cinematic Score</div>
           <div class="demo-title">BON IVER — Practice Score</div>
           <div class="demo-desc">Original score written to picture for a Bon Iver visual brief. Focused on space, texture and emotional restraint — letting the music breathe underneath the narrative without competing with it.</div>
@@ -231,16 +221,15 @@
         <div class="demo-tag">Audio Only</div>
       </div>
       <div class="demo-video-wrap">
-        <audio controls preload="metadata" style="width:100%;height:48px;filter:invert(1) hue-rotate(130deg);">
+        <audio controls preload="metadata" style="width:100%;height:48px;">
           <source src="demo-bon-iver-score.mp4" type="video/mp4">
         </audio>
       </div>
     </div>
 
-    <!-- DEMO 3 — Arcane Practice Score -->
     <div class="demo-card reveal reveal-delay-2">
       <div class="demo-header">
-        <div class="demo-meta">
+        <div>
           <div class="demo-category">&#10022; Cinematic Score</div>
           <div class="demo-title">ARCANE — Practice Score</div>
           <div class="demo-desc">Original composition scored to a scene from Riot's Arcane. Written to match the show's blend of orchestral weight and electronic tension — demonstrating range across genre and mood within a single cue.</div>
@@ -248,15 +237,14 @@
         <div class="demo-tag">Audio Only</div>
       </div>
       <div class="demo-video-wrap">
-        <audio controls preload="metadata" style="width:100%;height:48px;filter:invert(1) hue-rotate(130deg);">
+        <audio controls preload="metadata" style="width:100%;height:48px;">
           <source src="demo-arcane-score.mp4" type="video/mp4">
         </audio>
       </div>
     </div>
 
-    <!-- COMING SOON PLACEHOLDERS -->
     <div class="demo-coming reveal reveal-delay-3">
-      <div class="coming-meta">
+      <div>
         <div class="coming-category">&#10022; Drum & Bass</div>
         <div class="coming-title">AC13 — ORIGINAL PRODUCTION</div>
       </div>
@@ -264,7 +252,7 @@
     </div>
 
     <div class="demo-coming reveal">
-      <div class="coming-meta">
+      <div>
         <div class="coming-category">&#10022; K-Pop / Pop</div>
         <div class="coming-title">VOCAL PRODUCTION</div>
       </div>
@@ -275,7 +263,7 @@
 
   <!-- CTA -->
   <div class="demos-cta">
-    <div class="demos-cta-text reveal">
+    <div class="reveal">
       <div class="demos-cta-label">Ready to start?</div>
       <div class="demos-cta-heading">HEAR SOMETHING<br>YOU LIKE?</div>
     </div>
@@ -284,27 +272,199 @@
 
   <footer>
     <div class="footer-logo">YSD<span>.</span>AUDIO</div>
-    <div class="footer-copy">YSD Audio &#8212; Score &amp; Composition &#8212; Available for projects worldwide</div>
+    <div class="footer-copy">YSD Audio &#8212; Score &amp; Composition &#8212; Available worldwide</div>
   </footer>
 
   <script>
-    // Nav scroll
-    const nav = document.getElementById('nav');
-    window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 60); });
+  // ── THREE.JS SCROLL PARTICLE SYSTEM ──
+  (function() {
+    const canvas = document.getElementById('three-canvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x0a0a0a, 1);
 
-    // Scroll reveal
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 5;
 
-    // Progress bar
-    const bar = document.getElementById('progress-bar');
-    window.addEventListener('scroll', () => {
-      const scrolled = window.scrollY;
-      const total = document.documentElement.scrollHeight - window.innerHeight;
-      bar.style.width = (total > 0 ? (scrolled / total) * 100 : 0) + '%';
-    }, { passive: true });
+    const COUNT = 4500;
+
+    // ── Build 3 sets of target positions ──
+    const sphere   = new Float32Array(COUNT * 3);
+    const helix    = new Float32Array(COUNT * 3);
+    const scatter  = new Float32Array(COUNT * 3);
+
+    for (let i = 0; i < COUNT; i++) {
+      const i3 = i * 3;
+
+      // SPHERE — Fibonacci sphere
+      const phi   = Math.acos(1 - 2 * (i + 0.5) / COUNT);
+      const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+      const r = 2.2 + (Math.random() - 0.5) * 0.3;
+      sphere[i3]     = r * Math.sin(phi) * Math.cos(theta);
+      sphere[i3 + 1] = r * Math.cos(phi);
+      sphere[i3 + 2] = r * Math.sin(phi) * Math.sin(theta);
+
+      // HELIX — double helix / DNA
+      const t = (i / COUNT) * Math.PI * 16 - Math.PI * 8;
+      const strand = i % 2;
+      const helixR = 1.6;
+      const spread = (Math.random() - 0.5) * 0.18;
+      helix[i3]     = Math.cos(t + strand * Math.PI) * (helixR + spread);
+      helix[i3 + 1] = t * 0.22 + (Math.random() - 0.5) * 0.1;
+      helix[i3 + 2] = Math.sin(t + strand * Math.PI) * (helixR + spread);
+
+      // SCATTER — explosion cloud
+      const angle1 = Math.random() * Math.PI * 2;
+      const angle2 = Math.random() * Math.PI;
+      const dist   = 2.5 + Math.random() * 3.5;
+      scatter[i3]     = dist * Math.sin(angle2) * Math.cos(angle1);
+      scatter[i3 + 1] = dist * Math.cos(angle2) * (0.6 + Math.random() * 0.4);
+      scatter[i3 + 2] = dist * Math.sin(angle2) * Math.sin(angle1);
+    }
+
+    // ── Current animated positions ──
+    const positions = new Float32Array(COUNT * 3);
+    for (let i = 0; i < COUNT * 3; i++) positions[i] = sphere[i];
+
+    // ── Colours — gradient from red to dark ──
+    const colors = new Float32Array(COUNT * 3);
+    for (let i = 0; i < COUNT; i++) {
+      const t = i / COUNT;
+      colors[i * 3]     = 0.5 + t * 0.35;   // R
+      colors[i * 3 + 1] = 0.05 + t * 0.05;  // G
+      colors[i * 3 + 2] = 0.1 + t * 0.05;   // B
+    }
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('color',    new THREE.BufferAttribute(colors, 3));
+
+    const material = new THREE.PointsMaterial({
+      size: 0.028,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.85,
+      sizeAttenuation: true,
+      depthWrite: false,
+    });
+
+    const points = new THREE.Points(geometry, material);
+    scene.add(points);
+
+    // ── Scroll state ──
+    let scrollProgress = 0; // 0 → 1 across hero-scroll height
+    let phase = 0;          // 0, 1, 2
+    let mouse = { x: 0, y: 0 };
+
+    window.addEventListener('mousemove', e => {
+      mouse.x = (e.clientX / window.innerWidth  - 0.5) * 2;
+      mouse.y = (e.clientY / window.innerHeight - 0.5) * 2;
+    });
+
+    function lerp(a, b, t) { return a + (b - a) * t; }
+    function smoothstep(t) { return t * t * (3 - 2 * t); }
+
+    // ── Phase label & text ──
+    const stateLabel = document.getElementById('state-label');
+    const phases     = [
+      document.getElementById('phase-0'),
+      document.getElementById('phase-1'),
+      document.getElementById('phase-2'),
+    ];
+    const stateNames = ['SPHERE', 'HELIX', 'SCATTER'];
+
+    function setPhase(p) {
+      if (p === phase) return;
+      phases[phase].classList.remove('active');
+      phase = p;
+      phases[phase].classList.add('active');
+      stateLabel.textContent = stateNames[phase];
+    }
+
+    // ── Animate ──
+    let time = 0;
+    function animate() {
+      requestAnimationFrame(animate);
+      time += 0.004;
+
+      // Calc scroll
+      const hero   = document.getElementById('hero-scroll');
+      const heroH  = hero.offsetHeight - window.innerHeight;
+      const scroll = Math.max(0, Math.min(1, window.scrollY / heroH));
+      scrollProgress += (scroll - scrollProgress) * 0.06;
+
+      // Determine which two states to blend
+      let fromArr, toArr, t;
+      if (scrollProgress < 0.5) {
+        fromArr = sphere;
+        toArr   = helix;
+        t       = smoothstep(scrollProgress / 0.5);
+        if (scrollProgress < 0.25) setPhase(0); else setPhase(1);
+      } else {
+        fromArr = helix;
+        toArr   = scatter;
+        t       = smoothstep((scrollProgress - 0.5) / 0.5);
+        if (scrollProgress < 0.85) setPhase(1); else setPhase(2);
+      }
+
+      // Lerp positions + gentle pulse
+      const pos = geometry.attributes.position.array;
+      for (let i = 0; i < COUNT; i++) {
+        const i3 = i * 3;
+        const pulse = Math.sin(time * 1.2 + i * 0.003) * 0.012 * (1 - t * 0.6);
+        pos[i3]     = lerp(fromArr[i3],     toArr[i3],     t) + pulse;
+        pos[i3 + 1] = lerp(fromArr[i3 + 1], toArr[i3 + 1], t) + pulse;
+        pos[i3 + 2] = lerp(fromArr[i3 + 2], toArr[i3 + 2], t);
+      }
+      geometry.attributes.position.needsUpdate = true;
+
+      // Rotate based on scroll + time
+      points.rotation.y = time * 0.12 + scrollProgress * Math.PI * 1.5;
+      points.rotation.x = Math.sin(time * 0.08) * 0.15 + scrollProgress * 0.4;
+
+      // Mouse parallax on camera
+      camera.position.x += (mouse.x * 0.4 - camera.position.x) * 0.04;
+      camera.position.y += (-mouse.y * 0.3 - camera.position.y) * 0.04;
+      camera.lookAt(scene.position);
+
+      // Particle size pulses slightly
+      material.size = 0.024 + Math.sin(time * 2) * 0.003;
+
+      // Scroll hint fades after user starts scrolling
+      const hint = document.getElementById('scroll-hint');
+      if (hint) hint.style.opacity = Math.max(0, 1 - scrollProgress * 8);
+
+      renderer.render(scene, camera);
+    }
+
+    function resize() {
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+    }
+    window.addEventListener('resize', resize);
+    resize();
+    animate();
+  })();
+
+  // ── NAV ──
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 60); });
+
+  // ── SCROLL REVEAL ──
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ── PROGRESS BAR ──
+  const bar = document.getElementById('progress-bar');
+  window.addEventListener('scroll', () => {
+    const scrolled = window.scrollY;
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (total > 0 ? (scrolled / total) * 100 : 0) + '%';
+  }, { passive: true });
   </script>
 
 </body>
