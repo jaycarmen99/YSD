@@ -7,7 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
-  <script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
@@ -44,64 +43,57 @@
     .nav-book { background: var(--red); color: var(--white); border: none; padding: 10px 28px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; transition: background 0.2s, transform 0.2s; display: inline-block; }
     .nav-book:hover { background: var(--red-dark); transform: translateY(-1px); }
 
-    /* ── 3D CANVAS — fixed full-page background ── */
-    #three-canvas {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
+    /* ── IMAGE HERO ── */
+    #hero {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+      z-index: 1;
     }
-
-    /* ── SCROLL HERO ── */
-    #hero-scroll { height: 100vh; position: relative; z-index: 1; }
-    #hero-sticky {
-      position: relative; top: 0; height: 100vh;
-      display: flex; align-items: center; justify-content: center;
-      background: transparent;
+    #hero-bg {
+      position: absolute; inset: 0;
+      background: url('hero-mixer-render.png') center 55% / cover no-repeat;
+      animation: kenBurns 18s ease-in-out infinite alternate;
+      transform-origin: center center;
     }
-
-    /* Text layers — fade in/out based on scroll phase */
-    .hero-phase {
+    @keyframes kenBurns {
+      0%   { transform: scale(1.04) translateX(0px);   }
+      100% { transform: scale(1.0)  translateX(-12px);  }
+    }
+    #hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(10,10,10,1) 0%,
+        rgba(10,10,10,0.65) 30%,
+        rgba(10,10,10,0.3) 60%,
+        rgba(10,10,10,0.5) 100%
+      );
+    }
+    #hero-content {
       position: absolute;
       left: 48px; bottom: 80px;
       z-index: 2;
-      pointer-events: none;
-      transition: opacity 0.6s ease, transform 0.6s ease;
-      opacity: 0;
-      transform: translateY(20px);
     }
-    .hero-phase.active { opacity: 1; transform: translateY(0); }
-    .hero-phase .phase-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); font-weight: 700; margin-bottom: 12px; }
-    .hero-phase .phase-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(52px, 8vw, 100px); line-height: 0.9; letter-spacing: 2px; color: var(--white); margin-bottom: 16px; }
-    .hero-phase .phase-title .red { color: var(--red); }
-    .hero-phase .phase-title .outline { -webkit-text-stroke: 2px #333; color: transparent; }
-    .hero-phase .phase-sub { font-size: 14px; color: #555; font-weight: 300; max-width: 420px; line-height: 1.7; }
+    #hero-content .phase-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); font-weight: 700; margin-bottom: 12px; }
+    #hero-content .phase-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(60px, 9vw, 110px); line-height: 0.88; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; }
+    #hero-content .phase-title .red { color: var(--red); }
+    #hero-content .phase-sub { font-size: 14px; color: #888; font-weight: 300; max-width: 420px; line-height: 1.7; }
 
     /* Scroll hint */
     #scroll-hint {
       position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
       z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 8px;
-      opacity: 1; transition: opacity 0.4s;
     }
-    #scroll-hint span { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: #333; }
-    #scroll-hint .line { width: 1px; height: 40px; background: linear-gradient(to bottom, #333, transparent); animation: scrollPulse 1.8s ease-in-out infinite; }
+    #scroll-hint span { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: #444; }
+    #scroll-hint .line { width: 1px; height: 40px; background: linear-gradient(to bottom, #555, transparent); animation: scrollPulse 1.8s ease-in-out infinite; }
     @keyframes scrollPulse { 0%,100% { opacity: 0.3; transform: scaleY(0.6); } 50% { opacity: 1; transform: scaleY(1); } }
-
-    /* State label top right */
-    #state-label {
-      position: absolute; top: 96px; right: 48px; z-index: 2;
-      font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: #222;
-      font-family: 'Bebas Neue', sans-serif; font-size: 13px;
-      transition: color 0.6s;
-    }
 
     /* ── DEMOS ── */
     #demos-section {
       position: relative;
       z-index: 1;
-      background: linear-gradient(to bottom, transparent 0%, rgba(10,10,10,0.72) 120px, rgba(10,10,10,0.88) 400px);
+      background: var(--black);
     }
     .demos-wrap { max-width: 1200px; margin: 0 auto; padding: 80px 48px 120px; }
 
@@ -332,41 +324,18 @@
     </div>
   </nav>
 
-  <!-- Fixed 3D canvas — behind entire page -->
-  <canvas id="three-canvas"></canvas>
-
   <!-- ── HERO ── -->
-  <div id="hero-scroll">
-    <div id="hero-sticky">
-
-      <!-- Phase 0: Sphere — intro -->
-      <div class="hero-phase active" id="phase-0">
-        <div class="phase-label">&#10022; Demo Reel</div>
-        <div class="phase-title">THE<br><span class="red">REEL.</span></div>
-        <div class="phase-sub">Original compositions. Scroll to explore.</div>
-      </div>
-
-      <!-- Phase 1: Helix — genre range -->
-      <div class="hero-phase" id="phase-1">
-        <div class="phase-label">&#10022; Range</div>
-        <div class="phase-title">EVERY<br><span class="red">GENRE.</span><br><span class="outline">ONE MIND.</span></div>
-        <div class="phase-sub">Ad scoring, cinematic, D&B, orchestral — written and produced by one person.</div>
-      </div>
-
-      <!-- Phase 2: Scatter — CTA -->
-      <div class="hero-phase" id="phase-2">
-        <div class="phase-label">&#10022; The Work</div>
-        <div class="phase-title">HEAR IT<br><span class="red">BELOW.</span></div>
-        <div class="phase-sub">Three tracks. Three briefs. Every note human-made.</div>
-      </div>
-
-      <div id="state-label">SPHERE</div>
-
-      <div id="scroll-hint">
-        <span>Scroll</span>
-        <div class="line"></div>
-      </div>
-
+  <div id="hero">
+    <div id="hero-bg"></div>
+    <div id="hero-overlay"></div>
+    <div id="hero-content">
+      <div class="phase-label">&#10022; Demo Reel</div>
+      <div class="phase-title">THE<br><span class="red">REEL.</span></div>
+      <div class="phase-sub">Original compositions. Every note human-made.</div>
+    </div>
+    <div id="scroll-hint">
+      <span>Scroll</span>
+      <div class="line"></div>
     </div>
   </div>
 
@@ -607,183 +576,6 @@
   </div><!-- end demos-section -->
 
   <script>
-  // ── THREE.JS SCROLL PARTICLE SYSTEM ──
-  (function() {
-    const canvas = document.getElementById('three-canvas');
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x0a0a0a, 1);
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 5;
-
-    const COUNT = 4500;
-
-    // ── Build 3 sets of target positions ──
-    const sphere   = new Float32Array(COUNT * 3);
-    const helix    = new Float32Array(COUNT * 3);
-    const scatter  = new Float32Array(COUNT * 3);
-
-    for (let i = 0; i < COUNT; i++) {
-      const i3 = i * 3;
-
-      // SPHERE — Fibonacci sphere
-      const phi   = Math.acos(1 - 2 * (i + 0.5) / COUNT);
-      const theta = Math.PI * (1 + Math.sqrt(5)) * i;
-      const r = 2.2 + (Math.random() - 0.5) * 0.3;
-      sphere[i3]     = r * Math.sin(phi) * Math.cos(theta);
-      sphere[i3 + 1] = r * Math.cos(phi);
-      sphere[i3 + 2] = r * Math.sin(phi) * Math.sin(theta);
-
-      // HELIX — double helix / DNA
-      const t = (i / COUNT) * Math.PI * 16 - Math.PI * 8;
-      const strand = i % 2;
-      const helixR = 1.6;
-      const spread = (Math.random() - 0.5) * 0.18;
-      helix[i3]     = Math.cos(t + strand * Math.PI) * (helixR + spread);
-      helix[i3 + 1] = t * 0.22 + (Math.random() - 0.5) * 0.1;
-      helix[i3 + 2] = Math.sin(t + strand * Math.PI) * (helixR + spread);
-
-      // SCATTER — explosion cloud
-      const angle1 = Math.random() * Math.PI * 2;
-      const angle2 = Math.random() * Math.PI;
-      const dist   = 2.5 + Math.random() * 3.5;
-      scatter[i3]     = dist * Math.sin(angle2) * Math.cos(angle1);
-      scatter[i3 + 1] = dist * Math.cos(angle2) * (0.6 + Math.random() * 0.4);
-      scatter[i3 + 2] = dist * Math.sin(angle2) * Math.sin(angle1);
-    }
-
-    // ── Current animated positions ──
-    const positions = new Float32Array(COUNT * 3);
-    for (let i = 0; i < COUNT * 3; i++) positions[i] = sphere[i];
-
-    // ── Colours — gradient from red to dark ──
-    const colors = new Float32Array(COUNT * 3);
-    for (let i = 0; i < COUNT; i++) {
-      const t = i / COUNT;
-      colors[i * 3]     = 0.5 + t * 0.35;   // R
-      colors[i * 3 + 1] = 0.05 + t * 0.05;  // G
-      colors[i * 3 + 2] = 0.1 + t * 0.05;   // B
-    }
-
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute('color',    new THREE.BufferAttribute(colors, 3));
-
-    const material = new THREE.PointsMaterial({
-      size: 0.028,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.85,
-      sizeAttenuation: true,
-      depthWrite: false,
-    });
-
-    const points = new THREE.Points(geometry, material);
-    scene.add(points);
-
-    // ── State & mouse ──
-    let autoProgress = 0;   // 0 → 1 auto-driven
-    let phase = 0;
-    let mouse = { x: 0, y: 0 };
-
-    window.addEventListener('mousemove', e => {
-      mouse.x = (e.clientX / window.innerWidth  - 0.5) * 2;
-      mouse.y = (e.clientY / window.innerHeight - 0.5) * 2;
-    });
-
-    function lerp(a, b, t) { return a + (b - a) * t; }
-    function smoothstep(t) { return t * t * (3 - 2 * t); }
-
-    // ── Phase text ──
-    const stateLabel = document.getElementById('state-label');
-    const phases = [
-      document.getElementById('phase-0'),
-      document.getElementById('phase-1'),
-      document.getElementById('phase-2'),
-    ];
-    const stateNames = ['SPHERE', 'HELIX', 'SCATTER'];
-
-    function setPhase(p) {
-      if (p === phase) return;
-      phases[phase].classList.remove('active');
-      phase = p;
-      phases[phase].classList.add('active');
-      stateLabel.textContent = stateNames[phase];
-    }
-
-    // ── Auto-cycle: sphere → helix → scatter → sphere … ──
-    // Each state holds for ~4s, transition takes ~3s
-    // Total cycle = 21s
-    const CYCLE = 21;
-    let startTime = null;
-
-    // ── Animate ──
-    let time = 0;
-    function animate(ts) {
-      requestAnimationFrame(animate);
-      if (!startTime) startTime = ts;
-      time = (ts - startTime) * 0.001;
-
-      // Auto progress 0→1 cycling
-      const cycleT = (time % CYCLE) / CYCLE;
-      let fromArr, toArr, t;
-
-      if (cycleT < 0.33) {
-        // Sphere hold + transition to helix
-        const sub = cycleT / 0.33;
-        fromArr = sphere; toArr = helix;
-        t = sub < 0.4 ? 0 : smoothstep((sub - 0.4) / 0.6);
-        setPhase(sub < 0.5 ? 0 : 1);
-      } else if (cycleT < 0.66) {
-        // Helix hold + transition to scatter
-        const sub = (cycleT - 0.33) / 0.33;
-        fromArr = helix; toArr = scatter;
-        t = sub < 0.4 ? 0 : smoothstep((sub - 0.4) / 0.6);
-        setPhase(sub < 0.5 ? 1 : 2);
-      } else {
-        // Scatter hold + transition back to sphere
-        const sub = (cycleT - 0.66) / 0.34;
-        fromArr = scatter; toArr = sphere;
-        t = sub < 0.4 ? 0 : smoothstep((sub - 0.4) / 0.6);
-        setPhase(sub < 0.5 ? 2 : 0);
-      }
-
-      // Lerp particle positions
-      const pos = geometry.attributes.position.array;
-      for (let i = 0; i < COUNT; i++) {
-        const i3 = i * 3;
-        const pulse = Math.sin(time * 1.2 + i * 0.003) * 0.012 * (1 - t * 0.6);
-        pos[i3]     = lerp(fromArr[i3],     toArr[i3],     t) + pulse;
-        pos[i3 + 1] = lerp(fromArr[i3 + 1], toArr[i3 + 1], t) + pulse;
-        pos[i3 + 2] = lerp(fromArr[i3 + 2], toArr[i3 + 2], t);
-      }
-      geometry.attributes.position.needsUpdate = true;
-
-      // Gentle auto-rotation
-      points.rotation.y = time * 0.10;
-      points.rotation.x = Math.sin(time * 0.08) * 0.18;
-
-      // Mouse parallax
-      camera.position.x += (mouse.x * 0.4 - camera.position.x) * 0.04;
-      camera.position.y += (-mouse.y * 0.3 - camera.position.y) * 0.04;
-      camera.lookAt(scene.position);
-
-      material.size = 0.024 + Math.sin(time * 2) * 0.003;
-
-      renderer.render(scene, camera);
-    }
-
-    function resize() {
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-    }
-    window.addEventListener('resize', resize);
-    resize();
-    requestAnimationFrame(animate);
-  })();
 
   // ── NAV ──
   const nav = document.getElementById('nav');
