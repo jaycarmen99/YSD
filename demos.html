@@ -204,11 +204,81 @@
       border-left: 2px solid #1f1f1f; padding-left: 10px;
       line-height: 1.5;
     }
-    .track-card audio {
-      width: 100%; height: 36px;
-      position: relative; z-index: 1;
-    }
     .track-divider { width: 32px; height: 1px; background: #1f1f1f; }
+
+    /* ── CUSTOM AUDIO PLAYER ── */
+    .player {
+      display: flex; align-items: center; gap: 14px;
+      background: #060606;
+      border: 1px solid #181818;
+      border-left: 3px solid var(--red);
+      padding: 10px 14px;
+      position: relative; z-index: 1;
+      user-select: none;
+    }
+    .player-btn {
+      width: 32px; height: 32px; flex-shrink: 0;
+      background: var(--red); border: none; color: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background 0.15s;
+      font-size: 10px; letter-spacing: 1px;
+    }
+    .player-btn:hover { background: var(--red-dark); }
+    .player-btn svg { width: 10px; height: 10px; fill: white; pointer-events: none; }
+    .player-track { flex: 1; display: flex; flex-direction: column; gap: 7px; }
+    .player-bar {
+      height: 2px; background: #1c1c1c; cursor: pointer; position: relative;
+      transition: height 0.2s;
+    }
+    .player-bar:hover { height: 3px; }
+    .player-fill {
+      height: 100%; width: 0%; background: var(--red);
+      position: relative; pointer-events: none;
+      box-shadow: 0 0 6px rgba(215,38,56,0.4);
+    }
+    .player-fill::after {
+      content: '';
+      position: absolute; right: -4px; top: 50%; transform: translateY(-50%);
+      width: 7px; height: 7px; background: var(--white); border-radius: 50%;
+      opacity: 0; transition: opacity 0.15s;
+    }
+    .player-bar:hover .player-fill::after { opacity: 1; }
+    .player-meta {
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .player-time {
+      font-size: 9px; letter-spacing: 1.5px; color: #333; font-weight: 600; font-family: 'Inter', sans-serif;
+    }
+    .player-label {
+      font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #222; font-weight: 600;
+    }
+
+    /* Player inside demo cards (wider, for Bon Iver / Arcane) */
+    .demo-player {
+      margin: 0 40px 40px;
+      background: #060606;
+      border: 1px solid #181818;
+      border-left: 3px solid var(--red);
+      padding: 14px 18px;
+      display: flex; align-items: center; gap: 16px;
+      user-select: none;
+    }
+    .demo-player .player-btn {
+      width: 40px; height: 40px; flex-shrink: 0;
+      background: var(--red); border: none; color: white;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .demo-player .player-btn:hover { background: var(--red-dark); }
+    .demo-player .player-btn svg { width: 11px; height: 11px; fill: white; pointer-events: none; }
+    .demo-player .player-track { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+    .demo-player .player-bar { height: 2px; background: #1c1c1c; cursor: pointer; position: relative; transition: height 0.2s; }
+    .demo-player .player-bar:hover { height: 3px; }
+    .demo-player .player-fill { height: 100%; width: 0%; background: var(--red); position: relative; pointer-events: none; box-shadow: 0 0 8px rgba(215,38,56,0.4); }
+    .demo-player .player-fill::after { content: ''; position: absolute; right: -4px; top: 50%; transform: translateY(-50%); width: 8px; height: 8px; background: var(--white); border-radius: 50%; opacity: 0; transition: opacity 0.15s; }
+    .demo-player .player-bar:hover .player-fill::after { opacity: 1; }
+    .demo-player .player-meta { display: flex; justify-content: space-between; }
+    .demo-player .player-time { font-size: 10px; letter-spacing: 1.5px; color: #333; font-weight: 600; }
 
     @media (max-width: 900px) { .track-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 540px) { .track-grid { grid-template-columns: 1fr; } .featured-block { padding: 60px 20px; } }
@@ -302,6 +372,97 @@
 
   <!-- ── DEMOS ── -->
   <div id="demos-section">
+
+  <!-- ── FEATURED TRACKS — moved above main demos ── -->
+  <div class="featured-block">
+    <div class="featured-header reveal">
+      <div class="section-label">&#10022; Personal Projects</div>
+      <h2>TWO TRACKS.<br><span>FOUR CUTS.</span></h2>
+      <p>A look inside the AC13 project and a collaboration with Reaper — each track in two contrasting styles to show range within a single brief.</p>
+    </div>
+
+    <div class="track-grid">
+
+      <div class="track-card reveal">
+        <div class="track-project">&#10022; AC13 Project</div>
+        <div class="track-name">SHOSTAKOVICH</div>
+        <div class="track-variant">DNB Edit</div>
+        <div class="track-divider"></div>
+        <div class="player" data-src="track-shostakovich-1.wav">
+          <button class="player-btn" aria-label="Play">
+            <svg viewBox="0 0 10 12"><polygon points="0,0 10,6 0,12"/></svg>
+          </button>
+          <div class="player-track">
+            <div class="player-bar"><div class="player-fill"></div></div>
+            <div class="player-meta">
+              <span class="player-time">0:00</span>
+              <span class="player-label">WAV</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="track-card reveal reveal-delay-1">
+        <div class="track-project">&#10022; AC13 Project</div>
+        <div class="track-name">SHOSTAKOVICH</div>
+        <div class="track-variant">Glitch Hop Edit</div>
+        <div class="track-divider"></div>
+        <div class="player" data-src="track-shostakovich-2.wav">
+          <button class="player-btn" aria-label="Play">
+            <svg viewBox="0 0 10 12"><polygon points="0,0 10,6 0,12"/></svg>
+          </button>
+          <div class="player-track">
+            <div class="player-bar"><div class="player-fill"></div></div>
+            <div class="player-meta">
+              <span class="player-time">0:00</span>
+              <span class="player-label">WAV</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="track-card reveal reveal-delay-2">
+        <div class="track-project">&#10022; Collab — Reaper</div>
+        <div class="track-name">BREATHLESS <span style="font-size:11px;letter-spacing:2px;color:#333;font-family:'Inter',sans-serif;font-weight:600;">w/ Reaper</span></div>
+        <div class="track-variant">Metal Cut</div>
+        <div class="track-divider"></div>
+        <div class="player" data-src="track-breathless-metal.wav">
+          <button class="player-btn" aria-label="Play">
+            <svg viewBox="0 0 10 12"><polygon points="0,0 10,6 0,12"/></svg>
+          </button>
+          <div class="player-track">
+            <div class="player-bar"><div class="player-fill"></div></div>
+            <div class="player-meta">
+              <span class="player-time">0:00</span>
+              <span class="player-label">WAV</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="track-card reveal reveal-delay-3">
+        <div class="track-project">&#10022; Collab — Reaper</div>
+        <div class="track-name">BREATHLESS <span style="font-size:11px;letter-spacing:2px;color:#333;font-family:'Inter',sans-serif;font-weight:600;">w/ Reaper</span></div>
+        <div class="track-variant">Dubstep Rework</div>
+        <div class="track-divider"></div>
+        <div class="player" data-src="track-breathless-dubstep.wav">
+          <button class="player-btn" aria-label="Play">
+            <svg viewBox="0 0 10 12"><polygon points="0,0 10,6 0,12"/></svg>
+          </button>
+          <div class="player-track">
+            <div class="player-bar"><div class="player-fill"></div></div>
+            <div class="player-meta">
+              <span class="player-time">0:00</span>
+              <span class="player-label">WAV</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── MAIN DEMO CARDS ── -->
   <div class="demos-wrap">
 
     <div class="demo-card reveal">
@@ -332,11 +493,16 @@
         </div>
         <div class="demo-tag">Audio Only</div>
       </div>
-      <div class="demo-video-wrap">
-        <div class="video-shell" style="padding: 12px 0;">
-          <audio controls preload="metadata">
-            <source src="demo-bon-iver-score.mp4" type="video/mp4">
-          </audio>
+      <div class="demo-player" data-src="demo-bon-iver-score.mp4">
+        <button class="player-btn" aria-label="Play">
+          <svg viewBox="0 0 10 12"><polygon points="0,0 10,6 0,12"/></svg>
+        </button>
+        <div class="player-track">
+          <div class="player-bar"><div class="player-fill"></div></div>
+          <div class="player-meta">
+            <span class="player-time">0:00</span>
+            <span class="player-label">AUDIO ONLY</span>
+          </div>
         </div>
       </div>
     </div>
@@ -350,11 +516,16 @@
         </div>
         <div class="demo-tag">Audio Only</div>
       </div>
-      <div class="demo-video-wrap">
-        <div class="video-shell" style="padding: 12px 0;">
-          <audio controls preload="metadata">
-            <source src="demo-arcane-score.mp4" type="video/mp4">
-          </audio>
+      <div class="demo-player" data-src="demo-arcane-score.mp4">
+        <button class="player-btn" aria-label="Play">
+          <svg viewBox="0 0 10 12"><polygon points="0,0 10,6 0,12"/></svg>
+        </button>
+        <div class="player-track">
+          <div class="player-bar"><div class="player-fill"></div></div>
+          <div class="player-meta">
+            <span class="player-time">0:00</span>
+            <span class="player-label">AUDIO ONLY</span>
+          </div>
         </div>
       </div>
     </div>
@@ -367,63 +538,6 @@
       <div class="coming-badge">Coming Soon</div>
     </div>
 
-  </div>
-
-  <!-- ── FEATURED TRACKS ── -->
-  <div class="featured-block">
-    <div class="featured-header reveal">
-      <div class="section-label">&#10022; Personal Projects</div>
-      <h2>TWO TRACKS.<br><span>FOUR CUTS.</span></h2>
-      <p>A look inside the AC13 project and a collaboration with Reaper — each track presented in two contrasting styles to show range within a single brief.</p>
-    </div>
-
-    <div class="track-grid">
-
-      <!-- SHOSTAKOVICH 1 -->
-      <div class="track-card reveal">
-        <div class="track-project">&#10022; AC13 Project</div>
-        <div class="track-name">SHOSTAKOVICH</div>
-        <div class="track-variant">DNB Edit</div>
-        <div class="track-divider"></div>
-        <audio controls preload="metadata">
-          <source src="track-shostakovich-1.wav" type="audio/wav">
-        </audio>
-      </div>
-
-      <!-- SHOSTAKOVICH 2 -->
-      <div class="track-card reveal reveal-delay-1">
-        <div class="track-project">&#10022; AC13 Project</div>
-        <div class="track-name">SHOSTAKOVICH</div>
-        <div class="track-variant">Glitch Hop Edit</div>
-        <div class="track-divider"></div>
-        <audio controls preload="metadata">
-          <source src="track-shostakovich-2.wav" type="audio/wav">
-        </audio>
-      </div>
-
-      <!-- BREATHLESS METAL -->
-      <div class="track-card reveal reveal-delay-2">
-        <div class="track-project">&#10022; Collab — Reaper</div>
-        <div class="track-name">BREATHLESS <span style="font-size:11px;letter-spacing:2px;color:#333;font-family:'Inter',sans-serif;font-weight:600;">w/ Reaper</span></div>
-        <div class="track-variant">Metal Cut</div>
-        <div class="track-divider"></div>
-        <audio controls preload="metadata">
-          <source src="track-breathless-metal.wav" type="audio/wav">
-        </audio>
-      </div>
-
-      <!-- BREATHLESS DUBSTEP -->
-      <div class="track-card reveal reveal-delay-3">
-        <div class="track-project">&#10022; Collab — Reaper</div>
-        <div class="track-name">BREATHLESS <span style="font-size:11px;letter-spacing:2px;color:#333;font-family:'Inter',sans-serif;font-weight:600;">w/ Reaper</span></div>
-        <div class="track-variant">Dubstep Rework</div>
-        <div class="track-divider"></div>
-        <audio controls preload="metadata">
-          <source src="track-breathless-dubstep.wav" type="audio/wav">
-        </audio>
-      </div>
-
-    </div>
   </div>
 
   <!-- CTA -->
@@ -637,6 +751,70 @@
     const total = document.documentElement.scrollHeight - window.innerHeight;
     bar.style.width = (total > 0 ? (scrolled / total) * 100 : 0) + '%';
   }, { passive: true });
+
+  // ── CUSTOM AUDIO PLAYERS ──
+  (function() {
+    const PLAY_ICON  = '<svg viewBox="0 0 10 12"><polygon points="0,0 10,6 0,12" fill="white"/></svg>';
+    const PAUSE_ICON = '<svg viewBox="0 0 10 12"><rect x="0" y="0" width="3.5" height="12" fill="white"/><rect x="6.5" y="0" width="3.5" height="12" fill="white"/></svg>';
+
+    function fmt(s) {
+      const m = Math.floor(s / 60);
+      const ss = Math.floor(s % 60).toString().padStart(2, '0');
+      return m + ':' + ss;
+    }
+
+    let currentAudio = null;
+    let currentPlayer = null;
+
+    document.querySelectorAll('.player, .demo-player').forEach(function(el) {
+      const src  = el.dataset.src;
+      const btn  = el.querySelector('.player-btn');
+      const bar  = el.querySelector('.player-bar');
+      const fill = el.querySelector('.player-fill');
+      const time = el.querySelector('.player-time');
+      const audio = new Audio(src);
+
+      audio.addEventListener('timeupdate', function() {
+        if (!audio.duration) return;
+        const pct = (audio.currentTime / audio.duration) * 100;
+        fill.style.width = pct + '%';
+        time.textContent = fmt(audio.currentTime) + ' / ' + fmt(audio.duration);
+      });
+
+      audio.addEventListener('ended', function() {
+        btn.innerHTML = PLAY_ICON;
+        fill.style.width = '0%';
+        time.textContent = '0:00';
+        currentAudio = null; currentPlayer = null;
+      });
+
+      audio.addEventListener('loadedmetadata', function() {
+        time.textContent = '0:00 / ' + fmt(audio.duration);
+      });
+
+      btn.addEventListener('click', function() {
+        if (currentAudio && currentAudio !== audio) {
+          currentAudio.pause();
+          currentPlayer.querySelector('.player-btn').innerHTML = PLAY_ICON;
+        }
+        if (audio.paused) {
+          audio.play();
+          btn.innerHTML = PAUSE_ICON;
+          currentAudio = audio; currentPlayer = el;
+        } else {
+          audio.pause();
+          btn.innerHTML = PLAY_ICON;
+          currentAudio = null; currentPlayer = null;
+        }
+      });
+
+      bar.addEventListener('click', function(e) {
+        const rect = bar.getBoundingClientRect();
+        const pct  = (e.clientX - rect.left) / rect.width;
+        if (audio.duration) audio.currentTime = pct * audio.duration;
+      });
+    });
+  })();
 
   // ── VIDEO POSTER FRAMES ──
   // Seeks each video to 1.5s and captures a frame as the poster
