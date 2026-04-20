@@ -146,6 +146,72 @@
     audio { height: 48px; }
 
     .demo-coming { background: rgba(8,8,8,0.6); backdrop-filter: blur(4px); border-top: 2px solid #141414; margin-bottom: 2px; padding: 40px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+
+    /* ── FEATURED TRACKS GRID ── */
+    .featured-block {
+      position: relative; z-index: 1;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+      padding: 80px 48px;
+      background: rgba(8,8,8,0.82);
+      backdrop-filter: blur(8px);
+    }
+    .featured-header { max-width: 1200px; margin: 0 auto 48px; }
+    .featured-header .section-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); font-weight: 700; margin-bottom: 14px; }
+    .featured-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px, 5vw, 72px); line-height: 0.95; margin-bottom: 12px; }
+    .featured-header h2 span { color: var(--red); }
+    .featured-header p { font-size: 14px; color: #555; font-weight: 300; max-width: 540px; line-height: 1.7; }
+
+    .track-grid {
+      max-width: 1200px; margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: #1a1a1a;
+    }
+    .track-card {
+      background: rgba(12,12,12,0.9);
+      padding: 32px 28px 28px;
+      display: flex; flex-direction: column; gap: 16px;
+      border-top: 2px solid transparent;
+      transition: border-color 0.3s, background 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .track-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at top left, rgba(215,38,56,0.05) 0%, transparent 70%);
+      opacity: 0; transition: opacity 0.4s;
+    }
+    .track-card:hover { border-color: var(--red); background: rgba(16,16,16,0.95); }
+    .track-card:hover::before { opacity: 1; }
+
+    .track-project {
+      font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--red); font-weight: 700;
+    }
+    .track-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px; line-height: 1; color: var(--white);
+    }
+    .track-variant {
+      font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+      color: #333; font-weight: 600; margin-top: -8px;
+    }
+    .track-collab {
+      font-size: 11px; color: #444; font-weight: 300;
+      border-left: 2px solid #1f1f1f; padding-left: 10px;
+      line-height: 1.5;
+    }
+    .track-card audio {
+      width: 100%; height: 36px;
+      position: relative; z-index: 1;
+    }
+    .track-divider { width: 32px; height: 1px; background: #1f1f1f; }
+
+    @media (max-width: 900px) { .track-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 540px) { .track-grid { grid-template-columns: 1fr; } .featured-block { padding: 60px 20px; } }
     .coming-category { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: #333; font-weight: 700; margin-bottom: 10px; }
     .coming-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(24px, 3vw, 40px); color: #222; line-height: 1; }
     .coming-badge { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #222; font-weight: 600; border: 1px solid #1a1a1a; padding: 8px 16px; white-space: nowrap; }
@@ -293,14 +359,6 @@
       </div>
     </div>
 
-    <div class="demo-coming reveal reveal-delay-3">
-      <div>
-        <div class="coming-category">&#10022; Drum & Bass</div>
-        <div class="coming-title">AC13 — ORIGINAL PRODUCTION</div>
-      </div>
-      <div class="coming-badge">Coming Soon</div>
-    </div>
-
     <div class="demo-coming reveal">
       <div>
         <div class="coming-category">&#10022; K-Pop / Pop</div>
@@ -309,6 +367,65 @@
       <div class="coming-badge">Coming Soon</div>
     </div>
 
+  </div>
+
+  <!-- ── FEATURED TRACKS ── -->
+  <div class="featured-block">
+    <div class="featured-header reveal">
+      <div class="section-label">&#10022; Personal Projects</div>
+      <h2>TWO TRACKS.<br><span>FOUR CUTS.</span></h2>
+      <p>A look inside the AC13 project and a collaboration with Reaper — each track presented in two contrasting styles to show range within a single brief.</p>
+    </div>
+
+    <div class="track-grid">
+
+      <!-- SHOSTAKOVICH 1 -->
+      <div class="track-card reveal">
+        <div class="track-project">&#10022; AC13 Project</div>
+        <div class="track-name">SHOSTAKOVICH</div>
+        <div class="track-variant">First Cut</div>
+        <div class="track-divider"></div>
+        <audio controls preload="metadata">
+          <source src="track-shostakovich-1.wav" type="audio/wav">
+        </audio>
+      </div>
+
+      <!-- SHOSTAKOVICH 2 -->
+      <div class="track-card reveal reveal-delay-1">
+        <div class="track-project">&#10022; AC13 Project</div>
+        <div class="track-name">SHOSTAKOVICH</div>
+        <div class="track-variant">Second Cut</div>
+        <div class="track-divider"></div>
+        <audio controls preload="metadata">
+          <source src="track-shostakovich-2.wav" type="audio/wav">
+        </audio>
+      </div>
+
+      <!-- BREATHLESS METAL -->
+      <div class="track-card reveal reveal-delay-2">
+        <div class="track-project">&#10022; Collab — Reaper</div>
+        <div class="track-name">BREATHLESS</div>
+        <div class="track-variant">Metal Cut</div>
+        <div class="track-divider"></div>
+        <div class="track-collab">w/ Reaper</div>
+        <audio controls preload="metadata">
+          <source src="track-breathless-metal.wav" type="audio/wav">
+        </audio>
+      </div>
+
+      <!-- BREATHLESS DUBSTEP -->
+      <div class="track-card reveal reveal-delay-3">
+        <div class="track-project">&#10022; Collab — Reaper</div>
+        <div class="track-name">BREATHLESS</div>
+        <div class="track-variant">Dubstep Rework</div>
+        <div class="track-divider"></div>
+        <div class="track-collab">w/ Reaper</div>
+        <audio controls preload="metadata">
+          <source src="track-breathless-dubstep.wav" type="audio/wav">
+        </audio>
+      </div>
+
+    </div>
   </div>
 
   <!-- CTA -->
