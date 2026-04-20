@@ -868,36 +868,42 @@
   })();
 
   // ── VIDEO POSTER FRAMES ──
-  // Seeks each video to 1.5s and captures a frame as the poster
   (function() {
     document.querySelectorAll('video').forEach(function(vid) {
-      // Need preload auto to allow seeking
+      vid.muted = true;
       vid.preload = 'auto';
-      vid.muted   = true;
-
       var captured = false;
 
       function capture() {
-        if (captured || vid.videoWidth === 0) return;
-        captured = true;
-        var c = document.createElement('canvas');
-        c.width  = vid.videoWidth;
-        c.height = vid.videoHeight;
-        c.getContext('2d').drawImage(vid, 0, 0, c.width, c.height);
-        vid.poster = c.toDataURL('image/jpeg', 0.85);
-        vid.currentTime = 0;
-        vid.muted = false;
+        if (captured) return;
+        if (vid.videoWidth === 0 || vid.videoHeight === 0) return;
+        try {
+          var c = document.createElement('canvas');
+          c.width  = vid.videoWidth;
+          c.height = vid.videoHeight;
+          c.getContext('2d').drawImage(vid, 0, 0, c.width, c.height);
+          var data = c.toDataURL('image/jpeg', 0.8);
+          if (data.length > 5000) { // confirm it's not a blank frame
+            captured = true;
+            vid.poster = data;
+          } else {
+            // blank frame — try a bit later
+            vid.currentTime = Math.min(vid.currentTime + 1, vid.duration || 3);
+          }
+        } catch(e) {}
+        if (captured) { vid.currentTime = 0; vid.muted = false; }
       }
 
-      vid.addEventListener('seeked', capture, { once: true });
-      vid.addEventListener('loadeddata', function() {
-        vid.currentTime = 1.5;
-      }, { once: true });
-
-      // Fallback if already loaded
-      if (vid.readyState >= 2) {
-        vid.currentTime = 1.5;
+      function onMeta() {
+        vid.currentTime = 0.1; // grab near-first frame
       }
+
+      vid.addEventListener('seeked', function() {
+        setTimeout(capture, 80); // small delay so frame is painted
+      });
+      vid.addEventListener('loadedmetadata', onMeta, { once: true });
+
+      if (vid.readyState >= 1) onMeta();
     });
   })();
   </script>
