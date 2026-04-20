@@ -44,14 +44,22 @@
     .nav-book { background: var(--red); color: var(--white); border: none; padding: 10px 28px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; transition: background 0.2s, transform 0.2s; display: inline-block; }
     .nav-book:hover { background: var(--red-dark); transform: translateY(-1px); }
 
+    /* ── 3D CANVAS — fixed full-page background ── */
+    #three-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
     /* ── SCROLL HERO ── */
-    #hero-scroll { height: 100vh; position: relative; }
+    #hero-scroll { height: 100vh; position: relative; z-index: 1; }
     #hero-sticky {
       position: relative; top: 0; height: 100vh;
-      overflow: hidden; display: flex; align-items: center; justify-content: center;
-    }
-    #three-canvas {
-      position: absolute; inset: 0; width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent;
     }
 
     /* Text layers — fade in/out based on scroll phase */
@@ -90,9 +98,14 @@
     }
 
     /* ── DEMOS ── */
+    #demos-section {
+      position: relative;
+      z-index: 1;
+      background: linear-gradient(to bottom, transparent 0%, rgba(10,10,10,0.72) 120px, rgba(10,10,10,0.88) 400px);
+    }
     .demos-wrap { max-width: 1200px; margin: 0 auto; padding: 80px 48px 120px; }
 
-    .demo-card { background: #0d0d0d; border-top: 2px solid #1a1a1a; margin-bottom: 2px; transition: border-color 0.3s; overflow: hidden; }
+    .demo-card { background: rgba(10,10,10,0.75); backdrop-filter: blur(4px); border-top: 2px solid #1a1a1a; margin-bottom: 2px; transition: border-color 0.3s; overflow: hidden; }
     .demo-card:hover { border-color: var(--red); }
 
     .demo-header { display: grid; grid-template-columns: 1fr auto; align-items: center; padding: 36px 40px; gap: 24px; }
@@ -132,19 +145,19 @@
     video { min-height: 200px; }
     audio { height: 48px; }
 
-    .demo-coming { background: #080808; border-top: 2px solid #141414; margin-bottom: 2px; padding: 40px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .demo-coming { background: rgba(8,8,8,0.6); backdrop-filter: blur(4px); border-top: 2px solid #141414; margin-bottom: 2px; padding: 40px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
     .coming-category { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: #333; font-weight: 700; margin-bottom: 10px; }
     .coming-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(24px, 3vw, 40px); color: #222; line-height: 1; }
     .coming-badge { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #222; font-weight: 600; border: 1px solid #1a1a1a; padding: 8px 16px; white-space: nowrap; }
 
     /* ── CTA ── */
-    .demos-cta { max-width: 1200px; margin: 0 auto; padding: 80px 48px 120px; border-top: 1px solid #141414; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 32px; }
+    .demos-cta { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 80px 48px 120px; border-top: 1px solid #1a1a1a; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 32px; }
     .demos-cta-label { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); font-weight: 600; margin-bottom: 12px; }
     .demos-cta-heading { font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 5vw, 64px); line-height: 0.95; }
     .btn-primary { background: var(--red); color: var(--white); padding: 16px 40px; font-weight: 700; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; transition: background 0.2s, transform 0.2s; display: inline-block; white-space: nowrap; }
     .btn-primary:hover { background: var(--red-dark); transform: translateY(-2px); }
 
-    footer { border-top: 1px solid #141414; padding: 40px 48px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+    footer { position: relative; z-index: 1; border-top: 1px solid #141414; padding: 40px 48px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; background: transparent; }
     .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: #333; }
     .footer-logo span { color: var(--red); }
     .footer-copy { font-size: 12px; color: #333; letter-spacing: 1px; }
@@ -183,11 +196,12 @@
     </div>
   </nav>
 
-  <!-- ── 3D SCROLL HERO ── -->
+  <!-- Fixed 3D canvas — behind entire page -->
+  <canvas id="three-canvas"></canvas>
+
+  <!-- ── HERO ── -->
   <div id="hero-scroll">
     <div id="hero-sticky">
-
-      <canvas id="three-canvas"></canvas>
 
       <!-- Phase 0: Sphere — intro -->
       <div class="hero-phase active" id="phase-0">
@@ -221,6 +235,7 @@
   </div>
 
   <!-- ── DEMOS ── -->
+  <div id="demos-section">
   <div class="demos-wrap">
 
     <div class="demo-card reveal">
@@ -309,6 +324,7 @@
     <div class="footer-logo">YSD<span>.</span>AUDIO</div>
     <div class="footer-copy">YSD Audio &#8212; Score &amp; Composition &#8212; Available worldwide</div>
   </footer>
+  </div><!-- end demos-section -->
 
   <script>
   // ── THREE.JS SCROLL PARTICLE SYSTEM ──
