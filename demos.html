@@ -44,64 +44,84 @@
     .nav-book { background: var(--red); color: var(--white); border: none; padding: 10px 28px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; transition: background 0.2s, transform 0.2s; display: inline-block; }
     .nav-book:hover { background: var(--red-dark); transform: translateY(-1px); }
 
-    /* ── 3D CANVAS — fixed full-page background ── */
-    #three-canvas {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    /* ── SCROLL HERO ── */
-    #hero-scroll { height: 100vh; position: relative; z-index: 1; }
+    /* ── VIDEO SCROLL HERO ── */
+    #hero-scroll { height: 350vh; position: relative; }
     #hero-sticky {
-      position: relative; top: 0; height: 100vh;
-      display: flex; align-items: center; justify-content: center;
-      background: transparent;
+      position: sticky; top: 0; height: 100vh;
+      overflow: hidden;
     }
-
-    /* Text layers — fade in/out based on scroll phase */
+    #hero-video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+    #hero-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to right, rgba(10,10,10,0.75) 30%, rgba(10,10,10,0.2) 100%);
+      z-index: 1;
+    }
     .hero-phase {
       position: absolute;
       left: 48px; bottom: 80px;
-      z-index: 2;
-      pointer-events: none;
-      transition: opacity 0.6s ease, transform 0.6s ease;
-      opacity: 0;
-      transform: translateY(20px);
+      z-index: 2; pointer-events: none;
+      transition: opacity 0.7s ease, transform 0.7s ease;
+      opacity: 0; transform: translateY(20px);
     }
     .hero-phase.active { opacity: 1; transform: translateY(0); }
     .hero-phase .phase-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); font-weight: 700; margin-bottom: 12px; }
     .hero-phase .phase-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(52px, 8vw, 100px); line-height: 0.9; letter-spacing: 2px; color: var(--white); margin-bottom: 16px; }
     .hero-phase .phase-title .red { color: var(--red); }
-    .hero-phase .phase-title .outline { -webkit-text-stroke: 2px #333; color: transparent; }
-    .hero-phase .phase-sub { font-size: 14px; color: #555; font-weight: 300; max-width: 420px; line-height: 1.7; }
+    .hero-phase .phase-title .outline { -webkit-text-stroke: 2px rgba(255,255,255,0.4); color: transparent; }
+    .hero-phase .phase-sub { font-size: 14px; color: rgba(255,255,255,0.5); font-weight: 300; max-width: 420px; line-height: 1.7; }
+
+    /* Scroll progress line */
+    #hero-scrub-bar {
+      position: absolute; bottom: 0; left: 0;
+      height: 2px; width: 0%; background: var(--red);
+      z-index: 3; transition: width 0.05s linear;
+      box-shadow: 0 0 8px rgba(215,38,56,0.6);
+    }
 
     /* Scroll hint */
     #scroll-hint {
       position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
-      z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 8px;
-      opacity: 1; transition: opacity 0.4s;
+      z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 8px;
+      transition: opacity 0.4s;
     }
-    #scroll-hint span { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: #333; }
-    #scroll-hint .line { width: 1px; height: 40px; background: linear-gradient(to bottom, #333, transparent); animation: scrollPulse 1.8s ease-in-out infinite; }
+    #scroll-hint span { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.25); }
+    #scroll-hint .line { width: 1px; height: 40px; background: linear-gradient(to bottom, rgba(255,255,255,0.2), transparent); animation: scrollPulse 1.8s ease-in-out infinite; }
     @keyframes scrollPulse { 0%,100% { opacity: 0.3; transform: scaleY(0.6); } 50% { opacity: 1; transform: scaleY(1); } }
 
-    /* State label top right */
-    #state-label {
-      position: absolute; top: 96px; right: 48px; z-index: 2;
-      font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: #222;
-      font-family: 'Bebas Neue', sans-serif; font-size: 13px;
-      transition: color 0.6s;
+    /* ── THREE.JS PARTICLE SECTION ── */
+    #particle-section {
+      position: relative; height: 80vh; overflow: hidden;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    #three-canvas {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+    }
+    #particle-label {
+      position: absolute; bottom: 48px; left: 48px; z-index: 2;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(36px, 5vw, 64px); line-height: 0.9;
+      color: var(--white); pointer-events: none;
+    }
+    #particle-label span { color: var(--red); }
+    #particle-sub {
+      position: absolute; bottom: 48px; right: 48px; z-index: 2;
+      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+      color: #333; pointer-events: none;
     }
 
     /* ── DEMOS ── */
     #demos-section {
       position: relative;
       z-index: 1;
-      background: linear-gradient(to bottom, transparent 0%, rgba(10,10,10,0.72) 120px, rgba(10,10,10,0.88) 400px);
+      background: var(--black);
     }
     .demos-wrap { max-width: 1200px; margin: 0 auto; padding: 80px 48px 120px; }
 
@@ -332,42 +352,42 @@
     </div>
   </nav>
 
-  <!-- Fixed 3D canvas — behind entire page -->
-  <canvas id="three-canvas"></canvas>
-
-  <!-- ── HERO ── -->
+  <!-- ── VIDEO SCROLL HERO ── -->
   <div id="hero-scroll">
     <div id="hero-sticky">
+      <video id="hero-video" src="hero-mixer.mp4" muted playsinline preload="auto"></video>
+      <div id="hero-overlay"></div>
 
-      <!-- Phase 0: Sphere — intro -->
       <div class="hero-phase active" id="phase-0">
         <div class="phase-label">&#10022; Demo Reel</div>
         <div class="phase-title">THE<br><span class="red">REEL.</span></div>
-        <div class="phase-sub">Original compositions. Scroll to explore.</div>
+        <div class="phase-sub">Original compositions. Scroll to hear the work.</div>
       </div>
-
-      <!-- Phase 1: Helix — genre range -->
       <div class="hero-phase" id="phase-1">
         <div class="phase-label">&#10022; Range</div>
         <div class="phase-title">EVERY<br><span class="red">GENRE.</span><br><span class="outline">ONE MIND.</span></div>
-        <div class="phase-sub">Ad scoring, cinematic, D&B, orchestral — written and produced by one person.</div>
+        <div class="phase-sub">Ad scoring, cinematic, D&B, K-Pop — written and produced by one person.</div>
       </div>
-
-      <!-- Phase 2: Scatter — CTA -->
       <div class="hero-phase" id="phase-2">
         <div class="phase-label">&#10022; The Work</div>
         <div class="phase-title">HEAR IT<br><span class="red">BELOW.</span></div>
-        <div class="phase-sub">Three tracks. Three briefs. Every note human-made.</div>
+        <div class="phase-sub">Every note human-made. No AI. No templates.</div>
       </div>
 
-      <div id="state-label">SPHERE</div>
+      <div id="hero-scrub-bar"></div>
 
       <div id="scroll-hint">
         <span>Scroll</span>
         <div class="line"></div>
       </div>
-
     </div>
+  </div>
+
+  <!-- ── PARTICLE SECTION ── -->
+  <div id="particle-section">
+    <canvas id="three-canvas"></canvas>
+    <div id="particle-label">ONE<br>PERSON.<br><span>ALL OF IT.</span></div>
+    <div id="particle-sub">&#10022; Particle System</div>
   </div>
 
   <!-- ── DEMOS ── -->
@@ -607,15 +627,59 @@
   </div><!-- end demos-section -->
 
   <script>
-  // ── THREE.JS SCROLL PARTICLE SYSTEM ──
+  // ── VIDEO SCROLL SCRUB ──
   (function() {
+    const vid    = document.getElementById('hero-video');
+    const scrub  = document.getElementById('hero-scrub-bar');
+    const phases = [
+      document.getElementById('phase-0'),
+      document.getElementById('phase-1'),
+      document.getElementById('phase-2'),
+    ];
+    let currentPhase = 0;
+
+    function setPhase(p) {
+      if (p === currentPhase) return;
+      phases[currentPhase].classList.remove('active');
+      currentPhase = p;
+      phases[currentPhase].classList.add('active');
+    }
+
+    function onScroll() {
+      const heroH  = document.getElementById('hero-scroll').offsetHeight - window.innerHeight;
+      const prog   = Math.max(0, Math.min(1, window.scrollY / heroH));
+
+      // Scrub video
+      if (vid.duration) vid.currentTime = prog * vid.duration;
+
+      // Red progress line
+      scrub.style.width = (prog * 100) + '%';
+
+      // Scroll hint fades out
+      const hint = document.getElementById('scroll-hint');
+      if (hint) hint.style.opacity = Math.max(0, 1 - prog * 6);
+
+      // Phase text
+      if (prog < 0.35) setPhase(0);
+      else if (prog < 0.7) setPhase(1);
+      else setPhase(2);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    vid.addEventListener('loadedmetadata', onScroll);
+  })();
+
+  // ── THREE.JS PARTICLE SECTION ──
+  (function() {
+    const section = document.getElementById('particle-section');
     const canvas = document.getElementById('three-canvas');
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x0a0a0a, 1);
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const W = section.offsetWidth, H = section.offsetHeight;
+    const camera = new THREE.PerspectiveCamera(60, W / H, 0.1, 1000);
     camera.position.z = 5;
 
     const COUNT = 4500;
@@ -684,10 +748,7 @@
     scene.add(points);
 
     // ── State & mouse ──
-    let autoProgress = 0;   // 0 → 1 auto-driven
-    let phase = 0;
     let mouse = { x: 0, y: 0 };
-
     window.addEventListener('mousemove', e => {
       mouse.x = (e.clientX / window.innerWidth  - 0.5) * 2;
       mouse.y = (e.clientY / window.innerHeight - 0.5) * 2;
@@ -695,23 +756,6 @@
 
     function lerp(a, b, t) { return a + (b - a) * t; }
     function smoothstep(t) { return t * t * (3 - 2 * t); }
-
-    // ── Phase text ──
-    const stateLabel = document.getElementById('state-label');
-    const phases = [
-      document.getElementById('phase-0'),
-      document.getElementById('phase-1'),
-      document.getElementById('phase-2'),
-    ];
-    const stateNames = ['SPHERE', 'HELIX', 'SCATTER'];
-
-    function setPhase(p) {
-      if (p === phase) return;
-      phases[phase].classList.remove('active');
-      phase = p;
-      phases[phase].classList.add('active');
-      stateLabel.textContent = stateNames[phase];
-    }
 
     // ── Auto-cycle: sphere → helix → scatter → sphere … ──
     // Each state holds for ~4s, transition takes ~3s
@@ -731,23 +775,17 @@
       let fromArr, toArr, t;
 
       if (cycleT < 0.33) {
-        // Sphere hold + transition to helix
         const sub = cycleT / 0.33;
         fromArr = sphere; toArr = helix;
         t = sub < 0.4 ? 0 : smoothstep((sub - 0.4) / 0.6);
-        setPhase(sub < 0.5 ? 0 : 1);
       } else if (cycleT < 0.66) {
-        // Helix hold + transition to scatter
         const sub = (cycleT - 0.33) / 0.33;
         fromArr = helix; toArr = scatter;
         t = sub < 0.4 ? 0 : smoothstep((sub - 0.4) / 0.6);
-        setPhase(sub < 0.5 ? 1 : 2);
       } else {
-        // Scatter hold + transition back to sphere
         const sub = (cycleT - 0.66) / 0.34;
         fromArr = scatter; toArr = sphere;
         t = sub < 0.4 ? 0 : smoothstep((sub - 0.4) / 0.6);
-        setPhase(sub < 0.5 ? 2 : 0);
       }
 
       // Lerp particle positions
@@ -776,8 +814,9 @@
     }
 
     function resize() {
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      camera.aspect = window.innerWidth / window.innerHeight;
+      const W = section.offsetWidth, H = section.offsetHeight;
+      renderer.setSize(W, H);
+      camera.aspect = W / H;
       camera.updateProjectionMatrix();
     }
     window.addEventListener('resize', resize);
