@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+  <script type="module" src="https://unpkg.com/@splinetool/viewer@1.0.76/build/spline-viewer.js"></script>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
@@ -43,47 +44,53 @@
     .nav-book { background: var(--red); color: var(--white); border: none; padding: 10px 28px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; transition: background 0.2s, transform 0.2s; display: inline-block; }
     .nav-book:hover { background: var(--red-dark); transform: translateY(-1px); }
 
-    /* ── IMAGE HERO ── */
-    #hero {
-      position: relative;
-      height: 100vh;
+    /* ── SCROLL HERO ── */
+    #hero-scroll { height: 300vh; position: relative; z-index: 1; }
+    #hero-sticky {
+      position: sticky; top: 0; height: 100vh;
       overflow: hidden;
-      z-index: 1;
     }
-    #hero-bg {
+    #hero-spline {
       position: absolute; inset: 0;
-      background: url('hero-mixer-render.png') center 55% / cover no-repeat;
-      animation: kenBurns 18s ease-in-out infinite alternate;
-      transform-origin: center center;
+      width: 100%; height: 100%;
+      filter: hue-rotate(-28deg) saturate(1.15);
     }
-    @keyframes kenBurns {
-      0%   { transform: scale(1.04) translateX(0px);   }
-      100% { transform: scale(1.0)  translateX(-12px);  }
+    #hero-spline::part(logo) { display: none !important; }
+    #spline-badge-cover {
+      position: absolute; bottom: 0; right: 0;
+      width: 180px; height: 56px;
+      background: var(--black); z-index: 2;
     }
     #hero-overlay {
       position: absolute; inset: 0;
-      background: linear-gradient(
-        to top,
-        rgba(10,10,10,1) 0%,
-        rgba(10,10,10,0.65) 30%,
-        rgba(10,10,10,0.3) 60%,
-        rgba(10,10,10,0.5) 100%
-      );
+      background: linear-gradient(to top, rgba(10,10,10,1) 0%, rgba(10,10,10,0.3) 45%, rgba(10,10,10,0.05) 100%);
+      z-index: 1; pointer-events: none;
     }
-    #hero-content {
-      position: absolute;
-      left: 48px; bottom: 80px;
-      z-index: 2;
+    .hero-phase {
+      position: absolute; left: 48px; bottom: 80px;
+      z-index: 3; pointer-events: none;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      opacity: 0; transform: translateY(16px);
     }
-    #hero-content .phase-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); font-weight: 700; margin-bottom: 12px; }
-    #hero-content .phase-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(60px, 9vw, 110px); line-height: 0.88; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; }
-    #hero-content .phase-title .red { color: var(--red); }
-    #hero-content .phase-sub { font-size: 14px; color: #888; font-weight: 300; max-width: 420px; line-height: 1.7; }
+    .hero-phase.active { opacity: 1; transform: translateY(0); }
+    .hero-phase .phase-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); font-weight: 700; margin-bottom: 12px; }
+    .hero-phase .phase-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(60px, 9vw, 110px); line-height: 0.88; letter-spacing: 2px; color: var(--white); margin-bottom: 20px; }
+    .hero-phase .phase-title .red { color: var(--red); }
+    .hero-phase .phase-sub { font-size: 14px; color: #888; font-weight: 300; max-width: 420px; line-height: 1.7; }
+
+    /* Scroll progress bar inside hero */
+    #hero-progress {
+      position: absolute; bottom: 0; left: 0; height: 2px;
+      background: var(--red); width: 0%; z-index: 4;
+      box-shadow: 0 0 8px rgba(215,38,56,0.6);
+      transition: width 0.05s linear;
+    }
 
     /* Scroll hint */
     #scroll-hint {
       position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%);
-      z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 8px;
+      z-index: 4; display: flex; flex-direction: column; align-items: center; gap: 8px;
+      transition: opacity 0.4s;
     }
     #scroll-hint span { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: #444; }
     #scroll-hint .line { width: 1px; height: 40px; background: linear-gradient(to bottom, #555, transparent); animation: scrollPulse 1.8s ease-in-out infinite; }
@@ -325,17 +332,33 @@
   </nav>
 
   <!-- ── HERO ── -->
-  <div id="hero">
-    <div id="hero-bg"></div>
-    <div id="hero-overlay"></div>
-    <div id="hero-content">
-      <div class="phase-label">&#10022; Demo Reel</div>
-      <div class="phase-title">THE<br><span class="red">REEL.</span></div>
-      <div class="phase-sub">Original compositions. Every note human-made.</div>
-    </div>
-    <div id="scroll-hint">
-      <span>Scroll</span>
-      <div class="line"></div>
+  <div id="hero-scroll">
+    <div id="hero-sticky">
+      <spline-viewer id="hero-spline" url="https://prod.spline.design/Y0DB2GAlOgM0E2eb/scene.splinecode"></spline-viewer>
+      <div id="spline-badge-cover"></div>
+      <div id="hero-overlay"></div>
+      <div id="hero-progress"></div>
+
+      <div class="hero-phase active" id="phase-0">
+        <div class="phase-label">&#10022; Demo Reel</div>
+        <div class="phase-title">THE<br><span class="red">REEL.</span></div>
+        <div class="phase-sub">Original compositions. Every note human-made.</div>
+      </div>
+      <div class="hero-phase" id="phase-1">
+        <div class="phase-label">&#10022; Range</div>
+        <div class="phase-title">EVERY<br><span class="red">GENRE.</span></div>
+        <div class="phase-sub">Ad scoring, cinematic, D&amp;B, orchestral — one composer.</div>
+      </div>
+      <div class="hero-phase" id="phase-2">
+        <div class="phase-label">&#10022; The Work</div>
+        <div class="phase-title">HEAR IT<br><span class="red">BELOW.</span></div>
+        <div class="phase-sub">Keep scrolling to explore the reel.</div>
+      </div>
+
+      <div id="scroll-hint">
+        <span>Scroll</span>
+        <div class="line"></div>
+      </div>
     </div>
   </div>
 
@@ -576,6 +599,65 @@
   </div><!-- end demos-section -->
 
   <script>
+
+  // ── HERO SCROLL SCRUB ──
+  (function() {
+    const heroScroll  = document.getElementById('hero-scroll');
+    const heroProgress = document.getElementById('hero-progress');
+    const scrollHint  = document.getElementById('scroll-hint');
+    const phases = [
+      document.getElementById('phase-0'),
+      document.getElementById('phase-1'),
+      document.getElementById('phase-2'),
+    ];
+    let currentPhase = 0;
+    let splineApp = null;
+
+    // Grab Spline app after it loads for scrubbing
+    const viewer = document.getElementById('hero-spline');
+    if (viewer) {
+      viewer.addEventListener('load', () => {
+        splineApp = viewer.splineApp;
+        try { splineApp.pause(); } catch(e) {}
+      });
+    }
+
+    function setPhase(p) {
+      if (p === currentPhase) return;
+      phases[currentPhase].classList.remove('active');
+      currentPhase = p;
+      phases[currentPhase].classList.add('active');
+    }
+
+    window.addEventListener('scroll', () => {
+      const scrolled  = window.scrollY;
+      const heroH     = heroScroll.offsetHeight - window.innerHeight;
+      const progress  = Math.max(0, Math.min(1, scrolled / heroH));
+
+      // Phase text
+      if      (progress < 0.33) setPhase(0);
+      else if (progress < 0.66) setPhase(1);
+      else                      setPhase(2);
+
+      // Hero progress bar
+      if (heroProgress) heroProgress.style.width = (progress * 100) + '%';
+
+      // Scroll hint fades out after first scroll
+      if (scrollHint) scrollHint.style.opacity = progress < 0.04 ? '1' : '0';
+
+      // Try Spline timeline scrub
+      if (splineApp) {
+        try {
+          const anims = splineApp._scene && splineApp._scene.animations;
+          if (anims && anims.length) {
+            const a = anims[0];
+            const dur = a.duration || 4;
+            a.currentTime = progress * dur;
+          }
+        } catch(e) {}
+      }
+    }, { passive: true });
+  })();
 
   // ── NAV ──
   const nav = document.getElementById('nav');
