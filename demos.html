@@ -250,7 +250,7 @@
       <div class="demo-video-wrap">
         <div class="video-shell">
           <div class="video-play-label">&#9654; &nbsp; PRESS PLAY</div>
-          <video controls preload="metadata">
+          <video controls preload="auto">
             <source src="demo-antiordinary-ad.mp4" type="video/mp4">
           </video>
         </div>
@@ -522,6 +522,40 @@
     const total = document.documentElement.scrollHeight - window.innerHeight;
     bar.style.width = (total > 0 ? (scrolled / total) * 100 : 0) + '%';
   }, { passive: true });
+
+  // ── VIDEO POSTER FRAMES ──
+  // Seeks each video to 1.5s and captures a frame as the poster
+  (function() {
+    document.querySelectorAll('video').forEach(function(vid) {
+      // Need preload auto to allow seeking
+      vid.preload = 'auto';
+      vid.muted   = true;
+
+      var captured = false;
+
+      function capture() {
+        if (captured || vid.videoWidth === 0) return;
+        captured = true;
+        var c = document.createElement('canvas');
+        c.width  = vid.videoWidth;
+        c.height = vid.videoHeight;
+        c.getContext('2d').drawImage(vid, 0, 0, c.width, c.height);
+        vid.poster = c.toDataURL('image/jpeg', 0.85);
+        vid.currentTime = 0;
+        vid.muted = false;
+      }
+
+      vid.addEventListener('seeked', capture, { once: true });
+      vid.addEventListener('loadeddata', function() {
+        vid.currentTime = 1.5;
+      }, { once: true });
+
+      // Fallback if already loaded
+      if (vid.readyState >= 2) {
+        vid.currentTime = 1.5;
+      }
+    });
+  })();
   </script>
 
 </body>
