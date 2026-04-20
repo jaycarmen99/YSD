@@ -739,6 +739,7 @@
       object-fit: cover;
       object-position: center top;
       filter: brightness(0.88) saturate(0.9);
+      z-index: 2;
     }
     .producer-photo-accent {
       position: absolute;
@@ -749,6 +750,18 @@
       object-position: center top;
       filter: brightness(0.82) saturate(0.85);
       border: 3px solid var(--black);
+      z-index: 1;
+    }
+    .producer-photo-back {
+      position: absolute;
+      left: 0; top: 16%;
+      width: 44%;
+      height: 60%;
+      object-fit: cover;
+      object-position: center top;
+      filter: brightness(0.65) saturate(0.75);
+      border: 3px solid var(--black);
+      z-index: 0;
     }
     .producer-text { display: flex; flex-direction: column; justify-content: center; }
     .producer-name {
@@ -1160,6 +1173,7 @@
     <div class="producer-wrap">
 
       <div class="producer-photos reveal">
+        <img class="producer-photo-back" src="_rav3298.jpg" alt="Jay Carmen in the studio" />
         <img class="producer-photo-main" src="jay-studio.jpg" alt="Jay Carmen in the studio" />
         <img class="producer-photo-accent" src="jay-session.jpg" alt="Jay Carmen at work" />
       </div>
