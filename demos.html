@@ -45,7 +45,7 @@
     .nav-book:hover { background: var(--red-dark); transform: translateY(-1px); }
 
     /* ── SCROLL HERO ── */
-    #hero-scroll { height: 200vh; position: relative; z-index: 1; }
+    #hero-scroll { height: 160vh; position: relative; z-index: 1; }
     #hero-sticky {
       position: sticky; top: 0; height: 100vh;
       overflow: hidden;
@@ -99,10 +99,22 @@
     /* ── DEMOS ── */
     #demos-section {
       position: relative;
-      z-index: 1;
-      background: var(--black);
+      z-index: 2;
+      margin-top: -40vh;
+      background: transparent;
     }
-    .demos-wrap { max-width: 1200px; margin: 0 auto; padding: 40px 48px 80px; }
+    /* Fade-in ramp that blurs the Spline underneath as content appears */
+    #demos-ramp {
+      height: 140px;
+      background: linear-gradient(to bottom, transparent 0%, rgba(10,10,10,0.96) 100%);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    .demos-wrap { max-width: 1200px; margin: 0 auto; padding: 0 48px 80px;
+      background: rgba(10,10,10,0.96);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
 
     .demo-card { background: rgba(10,10,10,0.75); backdrop-filter: blur(4px); border-top: 2px solid #1a1a1a; margin-bottom: 2px; transition: border-color 0.3s; overflow: hidden; }
     .demo-card:hover { border-color: var(--red); }
@@ -152,8 +164,9 @@
       border-top: 1px solid #1a1a1a;
       border-bottom: 1px solid #1a1a1a;
       padding: 48px 48px;
-      background: rgba(8,8,8,0.82);
-      backdrop-filter: blur(8px);
+      background: rgba(8,8,8,0.96);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
     }
     .featured-header { max-width: 1200px; margin: 0 auto 48px; }
     .featured-header .section-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); font-weight: 700; margin-bottom: 14px; }
@@ -364,6 +377,7 @@
 
   <!-- ── DEMOS ── -->
   <div id="demos-section">
+  <div id="demos-ramp"></div>
 
   <!-- ── FEATURED TRACKS — moved above main demos ── -->
   <div class="featured-block">
