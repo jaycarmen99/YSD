@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YSD Audio — Demo Reel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --black: #0a0a0a;
+      --white: #ffffff;
+      --red: #D72638;
+      --red-dark: #a81c28;
+      --grey: #111111;
+      --mid: #888888;
+    }
+    html, body { background: var(--black); color: var(--white); font-family: 'Inter', sans-serif; overflow-x: hidden; }
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--black); }
+    ::-webkit-scrollbar-thumb { background: var(--red); }
+
+    /* ── CURSOR ── */
+    @media (hover: hover) {
+      * { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='20' viewBox='0 0 14 20'%3E%3Cpath d='M1 1 L1 16 L5 12 L7.5 18.5 L10 17.5 L7.5 11 L12.5 11 Z' fill='%23D72638' stroke='%23000' stroke-width='0.8' stroke-linejoin='round'/%3E%3C/svg%3E") 1 1, auto !important; }
+    }
+
+    /* ── PROGRESS BAR ── */
+    #progress-bar { position: fixed; top: 0; left: 0; height: 2px; width: 0%; background: var(--red); z-index: 9997; transition: width 0.1s linear; box-shadow: 0 0 8px rgba(215,38,56,0.6); }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 24px 48px;
+      transition: background 0.4s, padding 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(10,10,10,0.95); padding: 16px 48px;
+      backdrop-filter: blur(10px); border-bottom: 1px solid #1a1a1a;
+    }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
+    .nav-logo span { color: var(--red); }
+    .nav-right { display: flex; align-items: center; gap: 32px; }
+    .nav-demos { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--red); font-weight: 700; text-decoration: none; border-bottom: 1px solid var(--red); padding-bottom: 2px; }
+    .nav-book {
+      background: var(--red); color: var(--white); border: none;
+      padding: 10px 28px; font-family: 'Inter', sans-serif; font-weight: 700;
+      font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; text-decoration: none; transition: background 0.2s, transform 0.2s; display: inline-block;
+    }
+    .nav-book:hover { background: var(--red-dark); transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .page-hero {
+      padding: 180px 48px 80px;
+      max-width: 1200px; margin: 0 auto;
+    }
+    .page-label { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); font-weight: 600; margin-bottom: 16px; }
+    .page-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(64px, 10vw, 120px);
+      line-height: 0.9; letter-spacing: 2px; margin-bottom: 24px;
+    }
+    .page-title .outline { -webkit-text-stroke: 2px var(--white); color: transparent; }
+    .page-title .red { color: var(--red); }
+    .page-sub { font-size: 15px; color: #666; font-weight: 300; max-width: 480px; line-height: 1.7; }
+
+    /* ── DEMOS GRID ── */
+    .demos-wrap { max-width: 1200px; margin: 0 auto; padding: 0 48px 120px; }
+
+    .demo-card {
+      background: #0d0d0d;
+      border-top: 2px solid #1a1a1a;
+      margin-bottom: 2px;
+      transition: border-color 0.3s;
+      overflow: hidden;
+    }
+    .demo-card:hover { border-color: var(--red); }
+
+    .demo-header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      padding: 36px 40px;
+      gap: 24px;
+    }
+    .demo-meta {}
+    .demo-category {
+      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--red); font-weight: 700; margin-bottom: 10px;
+    }
+    .demo-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(28px, 4vw, 48px);
+      line-height: 1; color: var(--white); margin-bottom: 8px;
+    }
+    .demo-desc { font-size: 13px; color: #555; font-weight: 300; line-height: 1.6; max-width: 560px; }
+    .demo-tag {
+      font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+      padding: 8px 16px; border: 1px solid #1f1f1f; color: #444; font-weight: 600;
+      white-space: nowrap; align-self: flex-start;
+    }
+
+    /* Video player */
+    .demo-video-wrap {
+      padding: 0 40px 40px;
+    }
+    video {
+      width: 100%;
+      display: block;
+      background: #000;
+      outline: none;
+    }
+    video::-webkit-media-controls-panel { background: #111; }
+
+    /* ── COMING SOON CARDS ── */
+    .demo-coming {
+      background: #080808;
+      border-top: 2px solid #141414;
+      margin-bottom: 2px;
+      padding: 40px 40px;
+      display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    }
+    .coming-meta {}
+    .coming-category { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: #333; font-weight: 700; margin-bottom: 10px; }
+    .coming-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(24px, 3vw, 40px); color: #222; line-height: 1; }
+    .coming-badge { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #222; font-weight: 600; border: 1px solid #1a1a1a; padding: 8px 16px; white-space: nowrap; }
+
+    /* ── CTA ── */
+    .demos-cta {
+      max-width: 1200px; margin: 0 auto;
+      padding: 80px 48px 120px;
+      border-top: 1px solid #141414;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 32px;
+    }
+    .demos-cta-text {}
+    .demos-cta-label { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); font-weight: 600; margin-bottom: 12px; }
+    .demos-cta-heading { font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 5vw, 64px); line-height: 0.95; }
+    .btn-primary {
+      background: var(--red); color: var(--white); padding: 16px 40px;
+      font-weight: 700; font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+      text-decoration: none; transition: background 0.2s, transform 0.2s; display: inline-block; white-space: nowrap;
+    }
+    .btn-primary:hover { background: var(--red-dark); transform: translateY(-2px); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid #141414; padding: 40px 48px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+    }
+    .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: #333; }
+    .footer-logo span { color: var(--red); }
+    .footer-copy { font-size: 12px; color: #333; letter-spacing: 1px; }
+
+    /* ── REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      nav { padding: 18px 20px; }
+      nav.scrolled { padding: 12px 20px; }
+      .nav-book { padding: 8px 18px; font-size: 11px; }
+      .page-hero { padding: 140px 20px 48px; }
+      .demos-wrap { padding: 0 20px 80px; }
+      .demo-header { padding: 28px 20px; grid-template-columns: 1fr; }
+      .demo-video-wrap { padding: 0 20px 28px; }
+      .demo-coming { padding: 28px 20px; flex-direction: column; align-items: flex-start; }
+      .demos-cta { padding: 60px 20px 80px; flex-direction: column; }
+      footer { padding: 28px 20px; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="progress-bar"></div>
+
+  <nav id="nav">
+    <a href="index.html" class="nav-logo">YSD<span>.</span>AUDIO</a>
+    <div class="nav-right">
+      <a href="demos.html" class="nav-demos">Demo Reel</a>
+      <a href="index.html#book" class="nav-book">Book a project</a>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <div class="page-hero">
+    <div class="page-label reveal">Work</div>
+    <h1 class="page-title reveal reveal-delay-1">
+      THE<br>
+      <span class="red">REEL.</span>
+    </h1>
+    <p class="page-sub reveal reveal-delay-2">A selection of original compositions across ad scoring, cinematic, game audio and more. Every track written and produced by one person.</p>
+  </div>
+
+  <!-- DEMOS -->
+  <div class="demos-wrap">
+
+    <!-- DEMO 1 — Ad Scoring -->
+    <div class="demo-card reveal">
+      <div class="demo-header">
+        <div class="demo-meta">
+          <div class="demo-category">&#10022; Ad Scoring</div>
+          <div class="demo-title">ANTIORDINARY — Brand Film</div>
+          <div class="demo-desc">Original composition written for a brand film brief. Built to drive tension and forward momentum — designed to sit under visuals and amplify the message without overriding it.</div>
+        </div>
+        <div class="demo-tag">Commissioned Work</div>
+      </div>
+      <div class="demo-video-wrap">
+        <video controls preload="metadata">
+          <source src="demo-antiordinary-ad.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </div>
+
+    <!-- COMING SOON PLACEHOLDERS -->
+    <div class="demo-coming reveal reveal-delay-1">
+      <div class="coming-meta">
+        <div class="coming-category">&#10022; Cinematic Score</div>
+        <div class="coming-title">FILM / TRAILER</div>
+      </div>
+      <div class="coming-badge">Coming Soon</div>
+    </div>
+
+    <div class="demo-coming reveal reveal-delay-2">
+      <div class="coming-meta">
+        <div class="coming-category">&#10022; Game Audio</div>
+        <div class="coming-title">GAME SCORE / AMBIENT</div>
+      </div>
+      <div class="coming-badge">Coming Soon</div>
+    </div>
+
+    <div class="demo-coming reveal reveal-delay-3">
+      <div class="coming-meta">
+        <div class="coming-category">&#10022; Drum & Bass</div>
+        <div class="coming-title">AC13 — ORIGINAL PRODUCTION</div>
+      </div>
+      <div class="coming-badge">Coming Soon</div>
+    </div>
+
+    <div class="demo-coming reveal">
+      <div class="coming-meta">
+        <div class="coming-category">&#10022; K-Pop / Pop</div>
+        <div class="coming-title">VOCAL PRODUCTION</div>
+      </div>
+      <div class="coming-badge">Coming Soon</div>
+    </div>
+
+  </div>
+
+  <!-- CTA -->
+  <div class="demos-cta">
+    <div class="demos-cta-text reveal">
+      <div class="demos-cta-label">Ready to start?</div>
+      <div class="demos-cta-heading">HEAR SOMETHING<br>YOU LIKE?</div>
+    </div>
+    <a href="mailto:jay@ysdaudio.live" class="btn-primary reveal reveal-delay-1">Send a brief</a>
+  </div>
+
+  <footer>
+    <div class="footer-logo">YSD<span>.</span>AUDIO</div>
+    <div class="footer-copy">YSD Audio &#8212; Score &amp; Composition &#8212; Available for projects worldwide</div>
+  </footer>
+
+  <script>
+    // Nav scroll
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 60); });
+
+    // Scroll reveal
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Progress bar
+    const bar = document.getElementById('progress-bar');
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY;
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.width = (total > 0 ? (scrolled / total) * 100 : 0) + '%';
+    }, { passive: true });
+  </script>
+
+</body>
+</html>
