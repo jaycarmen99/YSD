@@ -185,9 +185,10 @@
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
     }
-    /* First block — header is in the ramp, no top border/padding needed */
+    /* First block — header is in the ramp, no borders or top padding needed */
     .featured-block:first-of-type {
       border-top: none;
+      border-bottom: none;
       padding-top: 0;
     }
     .featured-header { max-width: 1200px; margin: 0 auto 48px; }
@@ -385,12 +386,7 @@
       <div id="hero-overlay"></div>
       <div id="hero-progress"></div>
 
-      <div class="hero-phase active" id="phase-0">
-        <div class="phase-label">&#10022; Demo Reel</div>
-        <div class="phase-title">THE<br><span class="red">REEL.</span></div>
-        <div class="phase-sub">Original compositions. Every note human-made.</div>
-      </div>
-      <div class="hero-phase" id="phase-1">
+      <div class="hero-phase active" id="phase-1">
         <div class="phase-label">&#10022; Range</div>
         <div class="phase-title">EVERY<br><span class="red">GENRE.</span></div>
         <div class="phase-sub">Ad scoring, cinematic, D&amp;B, orchestral — one composer.</div>
@@ -654,7 +650,6 @@
     const heroProgress = document.getElementById('hero-progress');
     const scrollHint  = document.getElementById('scroll-hint');
     const phases = [
-      document.getElementById('phase-0'),
       document.getElementById('phase-1'),
       document.getElementById('phase-2'),
     ];
@@ -683,9 +678,8 @@
       const progress  = Math.max(0, Math.min(1, scrolled / heroH));
 
       // Phase text
-      if      (progress < 0.33) setPhase(0);
-      else if (progress < 0.66) setPhase(1);
-      else                      setPhase(2);
+      if (progress < 0.5) setPhase(0);
+      else                setPhase(1);
 
       // Hero progress bar
       if (heroProgress) heroProgress.style.width = (progress * 100) + '%';
