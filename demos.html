@@ -100,15 +100,32 @@
     #demos-section {
       position: relative;
       z-index: 2;
-      margin-top: -60vh;
+      margin-top: -85vh;
       background: transparent;
     }
-    /* Fade-in ramp that blurs the Spline underneath as content appears */
+    /* Ramp — fades in from the Spline below, text floats at the bottom of the gradient */
     #demos-ramp {
-      height: 180px;
-      background: linear-gradient(to bottom, transparent 0%, rgba(10,10,10,0.98) 100%);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
+      min-height: 220px;
+      /* Background darkens gradually — top stays transparent */
+      background: linear-gradient(to bottom,
+        transparent 0%,
+        rgba(10,10,10,0.55) 55%,
+        rgba(10,10,10,0.97) 100%
+      );
+      /* Mask fades the blur itself so there's no hard top edge */
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 45%);
+      mask-image: linear-gradient(to bottom, transparent 0%, black 45%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 48px 32px;
+    }
+    #ramp-header {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
     }
     .demos-wrap { max-width: 1200px; margin: 0 auto; padding: 0 48px 80px;
       background: rgba(10,10,10,0.96);
@@ -167,6 +184,11 @@
       background: rgba(8,8,8,0.96);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
+    }
+    /* First block — header is in the ramp, no top border/padding needed */
+    .featured-block:first-of-type {
+      border-top: none;
+      padding-top: 0;
     }
     .featured-header { max-width: 1200px; margin: 0 auto 48px; }
     .featured-header .section-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); font-weight: 700; margin-bottom: 14px; }
@@ -234,6 +256,7 @@
       display: flex; align-items: center; justify-content: center;
       cursor: pointer; transition: background 0.15s;
       font-size: 10px; letter-spacing: 1px;
+      -webkit-appearance: none; appearance: none;
     }
     .player-btn:hover { background: var(--red-dark); }
     .player-btn svg { width: 10px; height: 10px; fill: white; pointer-events: none; }
@@ -280,6 +303,7 @@
       background: var(--red); border: none; color: white;
       display: flex; align-items: center; justify-content: center;
       cursor: pointer; transition: background 0.15s;
+      -webkit-appearance: none; appearance: none;
     }
     .demo-player .player-btn:hover { background: var(--red-dark); }
     .demo-player .player-btn svg { width: 11px; height: 11px; fill: white; pointer-events: none; }
@@ -319,6 +343,11 @@
     @media (max-width: 768px) {
       nav { padding: 18px 20px; }
       nav.scrolled { padding: 12px 20px; }
+      /* Nav buttons — smaller on mobile */
+      .nav-right { gap: 10px; }
+      .nav-demos { font-size: 9px; letter-spacing: 1px; padding-bottom: 1px; }
+      .nav-book { padding: 6px 10px; font-size: 10px; letter-spacing: 1px; }
+      #demos-ramp { min-height: 180px; padding: 0 20px 24px; }
       .hero-phase { left: 20px; bottom: 60px; }
       .hero-phase .phase-title { font-size: clamp(44px, 14vw, 72px); }
       #state-label { right: 20px; }
@@ -326,6 +355,10 @@
       .demos-wrap { padding: 48px 20px 80px; }
       .demo-header { padding: 24px 20px; grid-template-columns: 1fr; }
       .demo-video-wrap { padding: 0 20px 24px; }
+      /* Demo player — fix wide margins on small screens */
+      .demo-player { margin: 0 20px 24px; padding: 12px 14px; gap: 12px; }
+      .demo-player .player-btn { width: 36px; height: 36px; }
+      .demo-player .player-btn svg { width: 10px; height: 10px; }
       .demo-coming { padding: 24px 20px; flex-direction: column; align-items: flex-start; }
       .demos-cta { padding: 60px 20px 80px; flex-direction: column; }
       footer { padding: 28px 20px; flex-direction: column; align-items: flex-start; }
@@ -377,15 +410,16 @@
 
   <!-- ── DEMOS ── -->
   <div id="demos-section">
-  <div id="demos-ramp"></div>
-
-  <!-- ── FEATURED TRACKS — moved above main demos ── -->
-  <div class="featured-block">
-    <div class="featured-header reveal">
+  <div id="demos-ramp">
+    <div id="ramp-header" class="featured-header reveal">
       <div class="section-label">&#10022; Personal Projects</div>
       <h2>TWO TRACKS.<br><span>FOUR CUTS.</span></h2>
       <p>A look inside the AC13 project and a collaboration with Reaper — each track in two contrasting styles to show range within a single brief.</p>
     </div>
+  </div>
+
+  <!-- ── FEATURED TRACKS — moved above main demos ── -->
+  <div class="featured-block">
 
     <div class="track-grid">
 
@@ -533,7 +567,7 @@
       </div>
       <div class="demo-video-wrap">
         <div class="video-shell">
-          <div class="video-play-label">&#9654; &nbsp; PRESS PLAY</div>
+          <div class="video-play-label">&#9654;&#65038; &nbsp; PRESS PLAY</div>
           <video controls preload="auto">
             <source src="demo-antiordinary-ad.mp4" type="video/mp4">
           </video>

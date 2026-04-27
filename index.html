@@ -60,6 +60,13 @@
       text-decoration: none;
     }
     .nav-logo span { color: var(--red); }
+    .nav-right-wrap { display: flex; align-items: center; gap: 32px; }
+    .nav-hear {
+      font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--black); font-weight: 700; text-decoration: none;
+      background: var(--red); padding: 8px 18px;
+      transition: background 0.2s; display: inline-block;
+    }
     .nav-book {
       background: var(--red);
       color: var(--white);
@@ -76,6 +83,22 @@
       display: inline-block;
     }
     .nav-book:hover { background: var(--red-dark); transform: translateY(-1px); }
+    /* Demo strip */
+    .demo-strip-outer { background: #0d0d0d; border-bottom: 1px solid #1a1a1a; }
+    .demo-strip-inner {
+      max-width: 1200px; margin: 0 auto; padding: 64px 48px;
+      display: grid; grid-template-columns: 1fr auto;
+      align-items: center; gap: 40px;
+    }
+    .demo-strip-btn {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: var(--red); color: var(--white);
+      padding: 20px 36px;
+      font-family: 'Inter', sans-serif; font-weight: 700;
+      font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+      text-decoration: none; white-space: nowrap;
+      transition: background 0.2s, transform 0.2s;
+    }
 
     /* ── HERO ── */
     .hero {
@@ -922,7 +945,9 @@
       /* Nav */
       nav { padding: 18px 20px; }
       nav.scrolled { padding: 12px 20px; }
-      .nav-book { padding: 8px 18px; font-size: 11px; }
+      .nav-right-wrap { gap: 10px; }
+      .nav-hear { padding: 6px 10px; font-size: 9px; letter-spacing: 1px; }
+      .nav-book { padding: 6px 10px; font-size: 10px; letter-spacing: 1px; }
 
       /* Hero */
       .hero { padding: 100px 20px 100px; min-height: 100svh; }
@@ -941,15 +966,15 @@
         position: relative;
         bottom: auto; right: auto;
         display: flex;
-        gap: 32px;
-        margin-top: 40px;
+        gap: 20px;
+        margin-top: 20px;
         justify-content: flex-start;
         opacity: 1;
         animation: none;
       }
       .stat-item { text-align: left; }
-      .stat-num { font-size: 28px; }
-      .stat-label { font-size: 9px; }
+      .stat-num { font-size: 22px; }
+      .stat-label { font-size: 8px; }
       .scroll-line { display: none; }
 
       /* Sections */
@@ -1005,6 +1030,19 @@
       .producer-stat-num { font-size: 28px; }
       .producer-bio { font-size: 14px; }
 
+      /* Demo strip — Hear Before Commit */
+      .demo-strip-inner {
+        grid-template-columns: 1fr;
+        padding: 36px 20px;
+        gap: 20px;
+      }
+      .demo-strip-btn {
+        align-self: flex-start;
+        padding: 12px 20px;
+        font-size: 11px;
+        letter-spacing: 1.5px;
+      }
+
       /* Footer */
       footer { padding: 28px 20px; flex-direction: column; align-items: flex-start; gap: 8px; }
 
@@ -1028,8 +1066,8 @@
 
   <nav id="nav">
     <a href="index.html" class="nav-logo">YSD<span>.</span>AUDIO</a>
-    <div style="display:flex;align-items:center;gap:32px;">
-      <a href="demos.html" style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--black);font-weight:700;text-decoration:none;background:var(--red);padding:8px 18px;transition:background 0.2s;" onmouseover="this.style.background='#a81c28'" onmouseout="this.style.background='#D72638'">&#9654; Hear the Work</a>
+    <div class="nav-right-wrap">
+      <a href="demos.html" class="nav-hear" onmouseover="this.style.background='#a81c28'" onmouseout="this.style.background='#D72638'">&#9654;&#65038; Hear the Work</a>
       <a href="#book" class="nav-book">Book a project</a>
     </div>
   </nav>
@@ -1093,15 +1131,15 @@
   </div>
 
   <!-- DEMO STRIP -->
-  <div style="background:#0d0d0d;border-bottom:1px solid #1a1a1a;">
-    <div style="max-width:1200px;margin:0 auto;padding:64px 48px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:40px;flex-wrap:wrap;">
+  <div class="demo-strip-outer">
+    <div class="demo-strip-inner">
       <div>
         <div style="font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:14px;">&#10022; Demo Reel</div>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,4vw,56px);line-height:0.95;color:var(--white);margin-bottom:12px;">HEAR IT BEFORE<br>YOU COMMIT.</div>
         <div style="font-size:14px;color:#555;font-weight:300;line-height:1.6;max-width:480px;">Ad scoring, cinematic scores and practice cues — listen to the full reel before reaching out. Three tracks across different genres and briefs.</div>
       </div>
-      <a href="demos.html" style="display:inline-flex;align-items:center;gap:12px;background:var(--red);color:var(--white);padding:20px 36px;font-family:'Inter',sans-serif;font-weight:700;font-size:13px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;white-space:nowrap;transition:background 0.2s,transform 0.2s;" onmouseover="this.style.background='#a81c28';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='#D72638';this.style.transform='translateY(0)'">
-        &#9654;&nbsp; Play the Reel
+      <a href="demos.html" class="demo-strip-btn" onmouseover="this.style.background='#a81c28';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='#D72638';this.style.transform='translateY(0)'">
+        &#9654;&#65038;&nbsp; Play the Reel
       </a>
     </div>
   </div>
