@@ -39,10 +39,27 @@
     nav.scrolled { background: rgba(10,10,10,0.95); padding: 16px 48px; backdrop-filter: blur(10px); border-bottom: 1px solid #1a1a1a; }
     .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--white); text-decoration: none; }
     .nav-logo span { color: var(--red); }
-    .nav-right { display: flex; align-items: center; gap: 32px; }
-    .nav-demos { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--white); font-weight: 700; text-decoration: none; border-bottom: 1px solid var(--red); padding-bottom: 2px; }
-    .nav-book { background: var(--red); color: var(--white); border: none; padding: 10px 28px; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; transition: background 0.2s, transform 0.2s; display: inline-block; }
-    .nav-book:hover { background: var(--red-dark); transform: translateY(-1px); }
+    .nav-right { display: flex; align-items: center; gap: 6px; }
+    /* Shared base */
+    .nav-email, .nav-demos, .nav-book {
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 8px 14px;
+      display: inline-block;
+      white-space: nowrap;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+    .nav-email { color: #555; border-color: #222; background: transparent; }
+    .nav-email:hover { color: var(--white); border-color: #444; }
+    .nav-demos { color: var(--white); border-color: #333; background: transparent; }
+    .nav-demos:hover { border-color: var(--red); }
+    .nav-book { color: var(--white); background: var(--red); border-color: var(--red); }
+    .nav-book:hover { background: var(--red-dark); border-color: var(--red-dark); }
 
     /* ── SCROLL HERO ── */
     #hero-scroll { height: 120vh; position: relative; z-index: 1; }
@@ -345,9 +362,10 @@
       nav { padding: 18px 20px; }
       nav.scrolled { padding: 12px 20px; }
       /* Nav buttons — smaller on mobile */
-      .nav-right { gap: 10px; }
-      .nav-demos { font-size: 9px; letter-spacing: 1px; padding-bottom: 1px; }
-      .nav-book { padding: 6px 10px; font-size: 10px; letter-spacing: 1px; }
+      .nav-right { gap: 4px; }
+      .nav-email { display: none; }
+      .nav-demos { padding: 6px 9px; font-size: 9px; letter-spacing: 1px; }
+      .nav-book { padding: 6px 9px; font-size: 9px; letter-spacing: 1px; }
       #demos-ramp { min-height: 180px; padding: 0 20px 24px; }
       .hero-phase { left: 20px; bottom: 60px; }
       .hero-phase .phase-title { font-size: clamp(44px, 14vw, 72px); }
@@ -373,6 +391,7 @@
   <nav id="nav">
     <a href="index.html" class="nav-logo">YSD<span>.</span>AUDIO</a>
     <div class="nav-right">
+      <a href="mailto:jay@ysdaudio.live" class="nav-email">jay@ysdaudio.live</a>
       <a href="demos.html" class="nav-demos">Demo Reel</a>
       <a href="index.html#book" class="nav-book">Book a project</a>
     </div>
