@@ -696,6 +696,31 @@
     .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 3px; color: #333; }
     .footer-logo span { color: var(--red); }
     .footer-copy { font-size: 12px; color: #333; letter-spacing: 1px; }
+    .footer-email { font-size: 12px; color: #444; letter-spacing: 1px; text-decoration: none; transition: color 0.2s; }
+    .footer-email:hover { color: var(--white); }
+
+    /* ── SENT BANNER ── */
+    #sent-banner {
+      position: fixed;
+      bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+      z-index: 9999;
+      background: #0d0d0d;
+      border: 1px solid #2a2a2a;
+      border-left: 3px solid var(--red);
+      padding: 16px 28px;
+      font-size: 13px;
+      letter-spacing: 1px;
+      color: var(--white);
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      pointer-events: none;
+    }
+    #sent-banner.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    #sent-banner strong { color: var(--red); }
 
     /* ── ANIMATIONS ── */
     @keyframes fadeUp {
@@ -1165,13 +1190,14 @@
   <!-- Dynamic UI overlays -->
   <div id="progress-bar"></div>
   <canvas id="grain"></canvas>
+  <div id="sent-banner"><strong>&#10003; Sent</strong> &nbsp;— I'll be in touch within a few hours.</div>
 
   <nav id="nav">
     <a href="index.html" class="nav-logo">YSD<span>.</span>AUDIO</a>
     <div class="nav-right-wrap">
       <a href="mailto:jay@ysdaudio.live" class="nav-email">jay@ysdaudio.live</a>
       <a href="demos.html" class="nav-hear">&#9654;&#65038; The Reel</a>
-      <a href="#book" class="nav-book">Book a project</a>
+      <a href="#book" class="nav-book">Book a call</a>
     </div>
   </nav>
 
@@ -1502,7 +1528,7 @@
         <form class="booking-form" action="https://formsubmit.co/jay@ysdaudio.live" method="POST" id="booking-form">
           <input type="hidden" name="_subject" value="Project Call Request — YSD Audio">
           <input type="hidden" name="_captcha" value="false">
-          <input type="hidden" name="_next" value="https://ysdaudio.live/#book">
+          <input type="hidden" name="_next" value="https://ysdaudio.live/?sent=1#book">
           <input type="hidden" name="_template" value="table">
 
           <div class="bform-header">
@@ -1583,9 +1609,27 @@
   <footer>
     <div class="footer-logo">YSD<span>.</span>AUDIO</div>
     <div class="footer-copy">YSD Audio &#8212; Score &amp; Composition &#8212; Available for projects worldwide</div>
+    <a href="mailto:jay@ysdaudio.live" class="footer-email">jay@ysdaudio.live</a>
   </footer>
 
   <script>
+
+    // ── FORM SENT BANNER ──
+    (function() {
+      if (new URLSearchParams(window.location.search).get('sent') === '1') {
+        const banner = document.getElementById('sent-banner');
+        if (!banner) return;
+        // Clean URL without reload
+        history.replaceState(null, '', window.location.pathname + '#book');
+        // Show banner after short delay so page has settled
+        setTimeout(function() {
+          banner.classList.add('show');
+          setTimeout(function() {
+            banner.classList.remove('show');
+          }, 5000);
+        }, 600);
+      }
+    })();
 
     // ── HERO CANVAS DOT GRID ──
     (function() {
