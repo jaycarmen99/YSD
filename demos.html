@@ -137,12 +137,31 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      padding: 0 48px 32px;
+      padding: 0 48px 24px;
     }
     #ramp-header {
       max-width: 1200px;
       width: 100%;
       margin: 0 auto;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      grid-template-rows: auto auto;
+      column-gap: 64px;
+      align-items: end;
+    }
+    #ramp-header .section-label {
+      grid-column: 1 / -1;
+    }
+    #ramp-header h2 {
+      grid-column: 1;
+      grid-row: 2;
+    }
+    #ramp-header p {
+      grid-column: 2;
+      grid-row: 2;
+      max-width: 520px;
+      align-self: end;
+      padding-bottom: 6px;
     }
     .demos-wrap { max-width: 1200px; margin: 0 auto; padding: 0 48px 80px;
       background: rgba(10,10,10,0.96);
@@ -206,9 +225,9 @@
     .featured-block:first-of-type {
       border-top: none;
       border-bottom: none;
-      padding-top: 0;
+      padding-top: 40px;
     }
-    .featured-header { max-width: 1200px; margin: 0 auto 48px; }
+    .featured-header { max-width: 1200px; margin: 0 auto 40px; }
     .featured-header .section-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--red); font-weight: 700; margin-bottom: 14px; }
     .featured-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px, 5vw, 72px); line-height: 0.95; margin-bottom: 12px; }
     .featured-header h2 span { color: var(--red); }
@@ -369,6 +388,8 @@
       .nav-demos { padding: 6px 9px; font-size: 9px; letter-spacing: 1px; }
       .nav-book { padding: 6px 9px; font-size: 9px; letter-spacing: 1px; }
       #demos-ramp { min-height: 180px; padding: 0 20px 24px; }
+      #ramp-header { display: block; }
+      #ramp-header p { max-width: 100%; padding-bottom: 0; }
       .hero-phase { left: 20px; bottom: 60px; }
       .hero-phase .phase-title { font-size: clamp(44px, 14vw, 72px); }
       #state-label { right: 20px; }
